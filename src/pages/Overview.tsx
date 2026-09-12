@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { apiRequest } from '../api/client';
+import { useAuth } from '../auth/AuthContext';
 
 type Connection =
   | { status: 'checking' }
@@ -7,6 +8,7 @@ type Connection =
   | { status: 'offline'; message: string };
 
 export function Overview() {
+  const { session } = useAuth();
   const [connection, setConnection] = useState<Connection>({ status: 'checking' });
   const [attempt, setAttempt] = useState(0);
 
@@ -45,7 +47,7 @@ export function Overview() {
     <>
       <div className="page-heading">
         <h1>Overview</h1>
-        <p>Admin panel setup</p>
+        <p>Your admin account</p>
       </div>
       <section className="connection-panel" aria-labelledby="connection-heading">
         <div className="panel-heading">
@@ -79,8 +81,14 @@ export function Overview() {
           </dl>
           {connection.status === 'offline' && <p role="alert" className="error-message">{connection.message}</p>}
           <div className="setup-note">
-            <h3>Authentication is not configured yet</h3>
-            <p>Login and OTP verification are the next step. Rental and customer data will be available after sign-in is implemented.</p>
+            <h3>Account</h3>
+            {session.status === 'authenticated' && (
+              <dl className="connection-details">
+                <div><dt>Name</dt><dd>{session.admin.fullName || session.admin.username}</dd></div>
+                <div><dt>Email</dt><dd>{session.admin.email || 'Not provided'}</dd></div>
+                <div><dt>Access</dt><dd>{session.admin.isSuperAdmin ? 'Super admin' : 'Admin'}</dd></div>
+              </dl>
+            )}
           </div>
         </div>
       </section>

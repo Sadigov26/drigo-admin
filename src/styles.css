@@ -124,6 +124,40 @@ button:disabled { color: #6b727a; cursor: wait; background: #f5f6f8; }
 .not-found { padding: 24px 0; }
 .not-found p { margin: 14px 0; }
 
+.account-menu { display: flex; align-items: center; gap: 16px; }
+.account-menu > span { overflow-wrap: anywhere; }
+.logout-error { margin: 16px 32px 0; }
+.auth-page { width: 100%; max-width: 440px; margin: 8vh auto 0; padding: 24px; }
+.auth-brand { margin-bottom: 24px; font-size: 22px; font-weight: 700; }
+.auth-brand span { margin-left: 5px; color: #6b7179; font-size: 13px; font-weight: 400; }
+.auth-panel { padding: 28px; border: 1px solid #d8dde3; border-radius: 5px; background: #fff; }
+.auth-panel h1 { font-size: 23px; }
+.auth-description { margin: 8px 0 24px; color: #626a74; }
+.form-field { margin-bottom: 18px; }
+.form-field label { display: block; margin-bottom: 6px; font-weight: 500; }
+.form-field input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #adb6c0;
+  border-radius: 4px;
+  background: #fff;
+  color: #24282d;
+  font: inherit;
+  font-size: 16px;
+}
+.form-field input:focus-visible { outline: 2px solid #426b9c; outline-offset: 2px; }
+.form-field input:disabled { background: #f5f6f8; }
+.field-help, .auth-footnote { margin-top: 8px; color: #626a74; font-size: 12px; }
+.auth-footnote { margin-top: 20px; }
+.primary-button { width: 100%; min-height: 40px; border-color: #303b49; background: #303b49; color: #fff; }
+.primary-button:hover:not(:disabled) { background: #222c38; }
+.primary-button:disabled { background: #dfe3e8; border-color: #c6cdd5; }
+.auth-back { display: inline-block; margin-top: 22px; font-size: 13px; text-underline-offset: 3px; }
+.session-screen { max-width: 480px; margin: 10vh auto; padding: 24px; }
+.session-screen p { margin: 16px 0; }
+.connection-details dd { overflow-wrap: anywhere; }
+
 @media (max-width: 700px) {
   .app-shell { display: block; }
   .sidebar {
@@ -142,6 +176,8 @@ button:disabled { color: #6b727a; cursor: wait; background: #f5f6f8; }
   .main-shell { margin-left: 0; }
   .topbar { height: auto; min-height: 52px; flex-wrap: wrap; gap: 4px 16px; padding: 12px 18px; }
   main { padding: 24px 18px; }
+  .auth-page { margin-top: 24px; padding: 18px; }
+  .auth-panel { padding: 22px; }
   .panel-heading { flex-wrap: wrap; gap: 12px; padding: 16px; }
   .panel-body { padding: 6px 16px 16px; }
   .connection-details > div { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }

@@ -2,46 +2,55 @@
 
 DRIGO internship frontend built with React, TypeScript and Vite.
 
-## Day 1 scope
+## Current scope
 
-- Independent frontend project with strict TypeScript.
-- Responsive sidebar, header, overview route and a 404 page.
-- A shared fetch wrapper that includes session cookies and preserves server error messages/statuses.
-- A live backend health check with loading, success, error, retry and an eight-second timeout.
+- Two-step login and OTP verification using the provided backend.
+- Cookie session restoration, protected routes and logout.
+- A restrained responsive layout with Overview and a protected 404 page.
+- Shared API client with cookies, request timeouts and HTTP error handling.
+- Live backend health check and the signed-in admin's account details.
 
-Authentication, permissions, dashboard KPIs and business modules are future work. The overview is a public setup screen; it does not claim that an admin is signed in. No fake business data is displayed.
+Business modules and dashboard KPIs are not implemented yet.
 
-## Run locally
+## Local setup
 
-Requires Node.js 22.12+ (Node 24 is used locally).
+Use Node.js 22.12+; development was verified with Node 24.
 
-1. Start the separate backend with `npm start` in `../drigo.dev.node`.
-2. Copy `.env.example` to `.env` if `.env` does not exist.
-3. Run `npm install`, then `npm run dev` in this directory.
-4. Open http://localhost:5173. The overview should show an online backend.
+1. Start the separate backend: run `npm start` in `../drigo.dev.node`.
+2. Copy `.env.example` to `.env` if it does not exist.
+3. Run `npm install`, then `npm run dev` here.
+4. Open http://localhost:5173.
 
-`VITE_API_BASE_URL=http://localhost:4000` is the backend origin. Requests supply complete paths such as `/api/health`. Vite exposes `VITE_` variables to the browser: never put secrets there.
+The mock login is `admin` / `admin123`, followed by OTP `123456`. These are local training credentials. Other provided accounts are `operator` and `fleet`; check the backend README for their setup.
 
-## Validation
+The frontend uses `VITE_API_BASE_URL=http://localhost:4000`. VITE-prefixed variables are visible to the browser: never put secrets there. Keep both frontend and backend on localhost, not a mixture of localhost and 127.0.0.1.
 
-`npm run typecheck` checks TypeScript. `npm run build` checks types and produces the production build in `dist/`.
+## Checks
 
-Manual checks: refresh the overview, use Check connection, stop the backend to verify the error and retry flow, restart it and retry, open an unknown URL for the 404 page, and check the layout on a narrow screen. The interface uses system fonts without external font requests.
+- `npm test`: auth integration and API error tests.
+- `npm run typecheck`: strict TypeScript checks.
+- `npm run build`: types and production build.
+- `npm audit`: dependency advisory check.
 
-## Structure
+The browser verifies the real session cookie behavior; mocked integration tests cover failure states deterministically.
 
-- `src/main.tsx`: starts React and BrowserRouter.
-- `src/App.tsx`: routes and the shared admin layout.
-- `src/pages/Overview.tsx`: the health check lifecycle and first screen.
-- `src/api/client.ts`: credentials, JSON responses and ApiError.
-- `src/styles.css`: responsive layout and visual styling.
+## Source structure
 
-## Git workflow
+- `src/auth/`: forms, auth requests, session state and route guards.
+- `src/api/client.ts`: shared fetch wrapper.
+- `src/App.tsx`: page routes, layout and logout control.
+- `src/pages/Overview.tsx`: health check and current account.
+- `src/styles.css`: shared styling, using system fonts.
+- `docs/DAY_02.md`: auth flow, tradeoffs and review notes.
 
-Use one branch per task, beginning with `feature/project-setup`. Open a PR with a description and screenshot; merge after review. Never push directly to main. The GitHub remote and initial main-branch bootstrap must be established before the first PR. Do not commit changes to the separate backend repository.
+`dist/`, `node_modules/` and `.env` are ignored by Git. Review source files under `src/`, not generated build files.
 
-Work on at least 21 distinct days during the internship, with meaningful commits. Understand and explain each change before committing.
+## Workflow
+
+Start each task from up-to-date main on its own feature branch. Push the feature branch, open a PR with a screenshot, and merge after review. Do not push application changes directly to main or commit to the separate backend repository.
+
+Understand each change before committing. Work on at least 21 different days during the internship. The original car-browser project remains separate.
 
 ## Next task
 
-`feature/auth`: login, OTP verification, session restoration with `/api/admin/auth/me`, logout and route protection. Handle 401 in auth/routing rather than redirecting unconditionally inside the fetch wrapper: wrong credentials also return 401 and must remain visible on the login form.
+Permissions-based navigation and shared list/loading/error components, followed by the dashboard.
