@@ -43,36 +43,46 @@ export function Overview() {
 
   return (
     <>
-      <section className="welcome">
-        <div>
-          <p className="eyebrow">DRIGO OPERATIONS</p>
-          <h1>Your fleet.<br />One workspace.</h1>
-          <p className="intro">A home for your cars, rentals and customers.<br />Your operations workspace is taking shape.</p>
-        </div>
-        <div className="welcome-mark" aria-hidden="true">D<span>↗</span></div>
-      </section>
-
+      <div className="page-heading">
+        <h1>Overview</h1>
+        <p>Admin panel setup</p>
+      </div>
       <section className="connection-panel" aria-labelledby="connection-heading">
-        <div>
-          <p className="eyebrow">CONNECTION</p>
-          <h2 id="connection-heading">Backend availability</h2>
-          <div role="status" aria-live="polite">
-            {connection.status === 'checking' && <p>Checking the connection…</p>}
-            {connection.status === 'online' && <p><span className="status-dot" /> Online <span className="muted">· Checked at {connection.checkedAt}</span></p>}
-            {connection.status === 'offline' && <p className="error-text">{connection.message}</p>}
+        <div className="panel-heading">
+          <h2 id="connection-heading">Server connection</h2>
+          <button
+            type="button"
+            disabled={connection.status === 'checking'}
+            onClick={() => {
+              setConnection({ status: 'checking' });
+              setAttempt(value => value + 1);
+            }}
+          >
+            {connection.status === 'checking' ? 'Checking…' : 'Check connection'}
+          </button>
+        </div>
+        <div className="panel-body">
+          <dl className="connection-details">
+            <div><dt>Service</dt><dd>DRIGO API</dd></div>
+            <div>
+              <dt>Status</dt>
+              <dd role="status" aria-live="polite">
+                {connection.status === 'checking' && 'Checking…'}
+                {connection.status === 'online' && <span className="connection-online">Connected</span>}
+                {connection.status === 'offline' && <span className="error-text">Unavailable</span>}
+              </dd>
+            </div>
+            <div>
+              <dt>Last successful check</dt>
+              <dd>{connection.status === 'online' ? connection.checkedAt : '—'}</dd>
+            </div>
+          </dl>
+          {connection.status === 'offline' && <p role="alert" className="error-message">{connection.message}</p>}
+          <div className="setup-note">
+            <h3>Authentication is not configured yet</h3>
+            <p>Login and OTP verification are the next step. Rental and customer data will be available after sign-in is implemented.</p>
           </div>
         </div>
-        <button disabled={connection.status === 'checking'} onClick={() => {
-          setConnection({ status: 'checking' });
-          setAttempt(value => value + 1);
-        }}>{connection.status === 'checking' ? 'Checking…' : 'Check again'} <span aria-hidden="true">↻</span></button>
-      </section>
-
-      <section className="workspace-plan" aria-labelledby="workspace-heading">
-        <div className="section-heading"><h2 id="workspace-heading">Inside your workspace</h2><span className="muted">Coming next</span></div>
-        <div className="module-row"><span className="module-number">01</span><div><h3>Secure access</h3><p>Sign in, verify your OTP and access your admin account.</p></div><span className="pill">Next milestone</span></div>
-        <div className="module-row"><span className="module-number">02</span><div><h3>Fleet & rentals</h3><p>Explore cars, inspect rentals and manage their lifecycle.</p></div><span className="muted">Planned</span></div>
-        <div className="module-row"><span className="module-number">03</span><div><h3>Customers & payments</h3><p>Review customers, track fines and manage outstanding debt.</p></div><span className="muted">Planned</span></div>
       </section>
     </>
   );

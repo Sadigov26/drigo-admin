@@ -9,15 +9,13 @@ function Layout() {
     <div className="app-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar">
-        <Link to="/" className="brand" aria-label="DRIGO home">drigo<span>↗</span></Link>
-        <p className="sidebar-label">WORKSPACE</p>
-        <nav aria-label="Main navigation"><NavLink to="/" end><span aria-hidden="true">▦</span> Overview</NavLink></nav>
-        <div className="sidebar-footer"><span className="sidebar-dot" /> Dubai operations<p>Admin workspace</p></div>
+        <Link to="/" className="brand" aria-label="DRIGO home">DRIGO <span>Admin</span></Link>
+        <nav aria-label="Main navigation"><NavLink to="/" end>Overview</NavLink></nav>
+        <div className="sidebar-footer">Dubai, UAE</div>
       </aside>
       <div className="main-shell">
-        <header className="topbar"><span>Workspace <span className="breadcrumb">/ {pathname === '/' ? 'Overview' : 'Not found'}</span></span><span className="environment">Local environment</span></header>
+        <header className="topbar"><span>Car rental administration</span><span className="environment">Local development</span></header>
         <main id="main-content" tabIndex={-1}><Outlet /></main>
-        <footer className="page-footer"><span>DRIGO Admin</span><span>Built for everyday operations.</span></footer>
       </div>
     </div>
   );

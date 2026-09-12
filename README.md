@@ -26,7 +26,7 @@ Requires Node.js 22.12+ (Node 24 is used locally).
 
 `npm run typecheck` checks TypeScript. `npm run build` checks types and produces the production build in `dist/`.
 
-Manual checks: refresh the overview, use Check again, stop the backend to verify the error and retry flow, restart it and retry, open an unknown URL for the 404 page, and check the layout on a narrow screen. Google Fonts are optional; local sans-serif fallbacks remain usable without a network connection.
+Manual checks: refresh the overview, use Check connection, stop the backend to verify the error and retry flow, restart it and retry, open an unknown URL for the 404 page, and check the layout on a narrow screen. The interface uses system fonts without external font requests.
 
 ## Structure
 
