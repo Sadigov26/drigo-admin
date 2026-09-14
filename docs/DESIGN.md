@@ -8,4 +8,4 @@ The user prefers a practical admin interface with individually considered layout
 - Reserve color for meaningful statuses and primary actions.
 - Let each module's workflow determine its layout. Lists should prioritize filters, readable rows and useful actions.
 - Keep code readable and easy to explain.
-- Replace the temporary setup notice with actual dashboard information when authentication is implemented.
+- Keep Overview focused on the signed-in account. Add dashboard information only when its real API integration is implemented.

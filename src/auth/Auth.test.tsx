@@ -50,6 +50,7 @@ beforeEach(() => {
       return json({ success: true });
     }
     if (path === '/api/health') return json({ status: 'ok' });
+    if (path === '/api/admin/permissions/my-permissions') return json({ adminId: admin.id, isSuperAdmin: true, permissionCodes: ['dashboard.view'] });
     throw new Error('Unexpected test request: ' + path);
   });
   vi.stubGlobal('fetch', fetchMock);

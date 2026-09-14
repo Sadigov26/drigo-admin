@@ -5,6 +5,10 @@ import { AuthProvider, useAuth } from './auth/AuthContext';
 import { GuestOnly, RequireAuth, SessionGate } from './auth/AuthRoutes';
 import { LoginPage } from './auth/LoginPage';
 import { VerifyPage } from './auth/VerifyPage';
+import { PermissionsProvider, usePermissions } from './permissions/PermissionsContext';
+import { menuItems } from './permissions/menu';
+import { ModulePage } from './permissions/ModulePage';
+import { ErrorState, LoadingState } from './components/States';
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -14,13 +18,14 @@ function PageTitle() {
       '/login': 'Sign in',
       '/verify': 'Verify sign-in',
     };
-    document.title = (titles[pathname] ?? 'Page not found') + ' | DRIGO Admin';
+    document.title = (titles[pathname] ?? menuItems.find(item => item.path === pathname)?.label ?? 'Page not found') + ' | DRIGO Admin';
   }, [pathname]);
   return null;
 }
 
 function Layout() {
   const { session, signOut } = useAuth();
+  const { state: permissions, can, retry } = usePermissions();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -43,6 +48,11 @@ function Layout() {
         <Link to="/" className="brand" aria-label="DRIGO home">DRIGO <span>Admin</span></Link>
         <nav aria-label="Main navigation">
           <NavLink to="/" end>Overview</NavLink>
+          {permissions.status === 'loading' && <LoadingState message="Loading menu…" />}
+          {permissions.status === 'error' && <ErrorState message="Menu unavailable." onRetry={retry} />}
+          {menuItems.filter(item => can(item.permission)).map(item => (
+            <NavLink key={item.path} to={item.path}>{item.label}</NavLink>
+          ))}
         </nav>
         <div className="sidebar-footer">Dubai, UAE</div>
       </aside>
@@ -61,6 +71,10 @@ function Layout() {
       </div>
     </div>
   );
+}
+
+function PermissionsLayout() {
+  return <PermissionsProvider><Layout /></PermissionsProvider>;
 }
 
 function NotFound() {
@@ -85,8 +99,11 @@ export function App() {
             <Route path="/verify" element={<VerifyPage />} />
           </Route>
           <Route element={<RequireAuth />}>
-            <Route element={<Layout />}>
+            <Route element={<PermissionsLayout />}>
               <Route index element={<Overview />} />
+              {menuItems.map(item => (
+                <Route key={item.path} path={item.path} element={<ModulePage title={item.label} permission={item.permission} />} />
+              ))}
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

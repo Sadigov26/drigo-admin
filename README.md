@@ -9,6 +9,9 @@ DRIGO internship frontend built with React, TypeScript and Vite.
 - A restrained responsive layout with Overview and a protected 404 page.
 - Shared API client with cookies, request timeouts and HTTP error handling.
 - Live backend health check and the signed-in admin's account details.
+- Permissions-based navigation and direct-route access checks.
+- Shared table, modal, status badges and loading/empty/error states.
+- A searchable permission list using the signed-in account's real grants.
 
 Business modules and dashboard KPIs are not implemented yet.
 
@@ -27,7 +30,7 @@ The frontend uses `VITE_API_BASE_URL=http://localhost:4000`. VITE-prefixed varia
 
 ## Checks
 
-- `npm test`: auth integration and API error tests.
+- `npm test`: auth, API errors, permissions and shared component tests.
 - `npm run typecheck`: strict TypeScript checks.
 - `npm run build`: types and production build.
 - `npm audit`: dependency advisory check.
@@ -38,10 +41,13 @@ The browser verifies the real session cookie behavior; mocked integration tests 
 
 - `src/auth/`: forms, auth requests, session state and route guards.
 - `src/api/client.ts`: shared fetch wrapper.
+- `src/permissions/`: permissions requests, account-scoped state, menu and module guards.
+- `src/components/`: table, modal, status badges and reusable states.
 - `src/App.tsx`: page routes, layout and logout control.
 - `src/pages/Overview.tsx`: health check and current account.
 - `src/styles.css`: shared styling, using system fonts.
 - `docs/DAY_02.md`: auth flow, tradeoffs and review notes.
+- `docs/DAY_03.md`: permissions, shared components and review notes.
 
 `dist/`, `node_modules/` and `.env` are ignored by Git. Review source files under `src/`, not generated build files.
 
@@ -53,4 +59,4 @@ Understand each change before committing. Work on at least 21 different days dur
 
 ## Next task
 
-Permissions-based navigation and shared list/loading/error components, followed by the dashboard.
+Dashboard data and its loading, error and empty states.
