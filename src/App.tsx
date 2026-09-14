@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { Overview } from './pages/Overview';
 import { AuthProvider, useAuth } from './auth/AuthContext';
@@ -9,6 +9,8 @@ import { PermissionsProvider, usePermissions } from './permissions/PermissionsCo
 import { menuItems } from './permissions/menu';
 import { ModulePage } from './permissions/ModulePage';
 import { ErrorState, LoadingState } from './components/States';
+
+const Dashboard = lazy(() => import('./dashboard/Dashboard'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -102,7 +104,11 @@ export function App() {
             <Route element={<PermissionsLayout />}>
               <Route index element={<Overview />} />
               {menuItems.map(item => (
-                <Route key={item.path} path={item.path} element={<ModulePage title={item.label} permission={item.permission} />} />
+                <Route key={item.path} path={item.path} element={
+                  <ModulePage title={item.label} permission={item.permission}>
+                    {item.path === '/dashboard' ? <Suspense fallback={<LoadingState message="Loading dashboard…" />}><Dashboard /></Suspense> : undefined}
+                  </ModulePage>
+                } />
               ))}
               <Route path="*" element={<NotFound />} />
             </Route>
