@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { apiRequest } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
+import { PermissionsTable } from '../permissions/PermissionsTable';
+import { StatusBadge } from '../components/StatusBadge';
 
 type Connection =
   | { status: 'checking' }
@@ -70,7 +72,7 @@ export function Overview() {
               <dt>Status</dt>
               <dd role="status" aria-live="polite">
                 {connection.status === 'checking' && 'Checking…'}
-                {connection.status === 'online' && <span className="connection-online">Connected</span>}
+                {connection.status === 'online' && <StatusBadge status="Connected" />}
                 {connection.status === 'offline' && <span className="error-text">Unavailable</span>}
               </dd>
             </div>
@@ -92,6 +94,7 @@ export function Overview() {
           </div>
         </div>
       </section>
+      <PermissionsTable />
     </>
   );
 }

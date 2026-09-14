@@ -1,17 +1,17 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { ErrorState, LoadingState } from '../components/States';
 
 export function SessionGate() {
   const { session, refreshSession } = useAuth();
   if (session.status === 'checking') {
-    return <main className="session-screen"><p role="status">Checking your session…</p></main>;
+    return <main className="session-screen"><LoadingState message="Checking your session…" /></main>;
   }
   if (session.status === 'error') {
     return (
       <main className="session-screen">
         <h1>Unable to connect</h1>
-        <p role="alert">{session.message}</p>
-        <button onClick={() => { void refreshSession(); }}>Try again</button>
+        <ErrorState message={session.message} onRetry={() => { void refreshSession(); }} />
       </main>
     );
   }
