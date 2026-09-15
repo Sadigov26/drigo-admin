@@ -12,8 +12,9 @@ DRIGO internship frontend built with React, TypeScript and Vite.
 - Permissions-based navigation and direct-route access checks.
 - Shared table, modal, status badges and loading/empty/error states.
 - A searchable permission list using the signed-in account's real grants.
+- Dashboard KPI cards and two live trend charts, with manual refresh and independent retries.
 
-Business modules and dashboard KPIs are not implemented yet.
+Business CRUD, dashboard fleet summary, online users and recent activity are not implemented yet.
 
 ## Local setup
 
@@ -30,7 +31,7 @@ The frontend uses `VITE_API_BASE_URL=http://localhost:4000`. VITE-prefixed varia
 
 ## Checks
 
-- `npm test`: auth, API errors, permissions and shared component tests.
+- `npm test`: auth, API errors, permissions, shared components and dashboard tests.
 - `npm run typecheck`: strict TypeScript checks.
 - `npm run build`: types and production build.
 - `npm audit`: dependency advisory check.
@@ -43,11 +44,13 @@ The browser verifies the real session cookie behavior; mocked integration tests 
 - `src/api/client.ts`: shared fetch wrapper.
 - `src/permissions/`: permissions requests, account-scoped state, menu and module guards.
 - `src/components/`: table, modal, status badges and reusable states.
+- `src/dashboard/`: validated KPI/trend responses, independent request state, cards and charts.
 - `src/App.tsx`: page routes, layout and logout control.
 - `src/pages/Overview.tsx`: health check and current account.
 - `src/styles.css`: shared styling, using system fonts.
 - `docs/DAY_02.md`: auth flow, tradeoffs and review notes.
 - `docs/DAY_03.md`: permissions, shared components and review notes.
+- `docs/DAY_04.md`: dashboard scope, response contracts and review notes.
 
 `dist/`, `node_modules/` and `.env` are ignored by Git. Review source files under `src/`, not generated build files.
 
@@ -59,4 +62,4 @@ Understand each change before committing. Work on at least 21 different days dur
 
 ## Next task
 
-Dashboard data and its loading, error and empty states.
+Finish the remaining Section 8.2 dashboard panels: fleet summary, online users and recent activity.
