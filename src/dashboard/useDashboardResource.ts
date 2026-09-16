@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-type Resource<T> =
+export type Resource<T> =
   | { status: 'loading' }
   | { status: 'ready'; data: T; loadedAt: Date }
   | { status: 'error'; message: string };
