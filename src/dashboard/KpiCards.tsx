@@ -1,11 +1,11 @@
 import type { KpiKey, Kpis } from './dashboardApi';
 
-type Metric = { key: KpiKey | 'customerDebt' | 'companyDebt'; label: string; unit?: 'AED' | 'hours' };
+type Metric = { key: KpiKey | 'customerDebt' | 'companyDebt'; label: string; unit?: 'AED' | 'hours'; tone?: 'sage' | 'blue' | 'sand' };
 const primary: Metric[] = [
-  { key: 'activeRentals', label: 'Active rentals' },
-  { key: 'todayRevenue', label: 'Revenue today', unit: 'AED' },
-  { key: 'monthlyRevenue', label: 'Revenue this month', unit: 'AED' },
-  { key: 'totalDebt', label: 'Outstanding debt', unit: 'AED' },
+  { key: 'activeRentals', label: 'Active rentals', tone: 'sage' },
+  { key: 'todayRevenue', label: 'Revenue today', unit: 'AED', tone: 'blue' },
+  { key: 'monthlyRevenue', label: 'Revenue this month', unit: 'AED', tone: 'blue' },
+  { key: 'totalDebt', label: 'Outstanding debt', unit: 'AED', tone: 'sand' },
 ];
 const groups: { title: string; metrics: Metric[] }[] = [
   { title: 'Operations', metrics: [
@@ -44,7 +44,7 @@ function Cards({ metrics, data }: { metrics: Metric[]; data: Kpis }) {
   return <dl className="kpi-grid">{metrics.map(metric => {
     const value = metric.key === 'customerDebt' ? data.totalDebtBreakdown.customer
       : metric.key === 'companyDebt' ? data.totalDebtBreakdown.company : data[metric.key];
-    return <div className="kpi-card" key={metric.key}>
+    return <div className={`kpi-card${metric.tone ? ` tone-${metric.tone}` : ''}`} key={metric.key}>
       <dt>{metric.label}</dt><dd>{formatMetric(value, metric.unit)}</dd>
     </div>;
   })}</dl>;

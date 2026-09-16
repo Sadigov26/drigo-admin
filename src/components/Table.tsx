@@ -27,11 +27,12 @@ export type TableProps<T> = {
   onSort: (sortBy: string, sortOrder: SortOrder) => void;
   onSearch: (search: string) => void;
   onRetry: () => void;
+  filters?: ReactNode;
 };
 
 // Parents own query state and fetching. This component never invents API parameters.
 export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize, loading,
-  error, search, sortBy, sortOrder, onPageChange, onSort, onSearch, onRetry }: TableProps<T>) {
+  error, search, sortBy, sortOrder, onPageChange, onSort, onSearch, onRetry, filters }: TableProps<T>) {
   const searchId = useId();
   const pageCount = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
 
@@ -44,11 +45,14 @@ export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize
   return (
     <div className="data-table">
       <div className="table-toolbar">
+        <div className="table-search">
         <label htmlFor={searchId}>Search {caption.toLowerCase()}</label>
         <input id={searchId} type="search" value={search} onChange={event => {
           onSearch(event.target.value);
           onPageChange(1);
         }} />
+        </div>
+        {filters}
       </div>
       {loading ? <LoadingState /> : error ? <ErrorState message={error} onRetry={onRetry} />
         : data.length === 0 ? <EmptyState /> : (

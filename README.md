@@ -13,8 +13,9 @@ DRIGO internship frontend built with React, TypeScript and Vite.
 - Shared table, modal, status badges and loading/empty/error states.
 - A searchable permission list using the signed-in account's real grants.
 - Dashboard KPI cards and two live trend charts, with manual refresh and independent retries.
+- Fleet summary with city counts, online users, and separate recent rental/reservation/support lists.
 
-Business CRUD, dashboard fleet summary, online users and recent activity are not implemented yet.
+Business CRUD is not implemented yet. Dashboard code covers Section 8.2 and has passed automated checks and desktop/mobile review. The remaining PR workflow is still required before closing Week 1.
 
 ## Local setup
 
@@ -44,13 +45,14 @@ The browser verifies the real session cookie behavior; mocked integration tests 
 - `src/api/client.ts`: shared fetch wrapper.
 - `src/permissions/`: permissions requests, account-scoped state, menu and module guards.
 - `src/components/`: table, modal, status badges and reusable states.
-- `src/dashboard/`: validated KPI/trend responses, independent request state, cards and charts.
+- `src/dashboard/`: validated dashboard responses, independent request state, cards, charts and snapshot lists.
 - `src/App.tsx`: page routes, layout and logout control.
 - `src/pages/Overview.tsx`: health check and current account.
 - `src/styles.css`: shared styling, using system fonts.
 - `docs/DAY_02.md`: auth flow, tradeoffs and review notes.
 - `docs/DAY_03.md`: permissions, shared components and review notes.
 - `docs/DAY_04.md`: dashboard scope, response contracts and review notes.
+- `docs/DAY_05.md`: fleet, online users, recent activity and the Week 1 handoff checklist.
 
 `dist/`, `node_modules/` and `.env` are ignored by Git. Review source files under `src/`, not generated build files.
 
@@ -62,4 +64,4 @@ Understand each change before committing. Work on at least 21 different days dur
 
 ## Next task
 
-Finish the remaining Section 8.2 dashboard panels: fleet summary, online users and recent activity.
+Finish Day 4/5 PR review/merge, then start Cars list with the real pagination/filter/search API.

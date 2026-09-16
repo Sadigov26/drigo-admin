@@ -26,10 +26,19 @@ const trends = {
   rentalTrends: [{ date: '2026-09-12', count: 2 }, { date: '2026-09-13', count: 0 }],
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
+const emptyActivity = { recentRentals: [], recentReservations: [], recentSupportMessages: [] };
+function extraResponse(url: string) {
+  if (url.endsWith('/fleet')) return json(null);
+  if (url.endsWith('/online-users')) return json([]);
+  if (url.endsWith('/recent-activity')) return json(emptyActivity);
+  return null;
+}
 
 function mockDashboard(options: { kpiBody?: unknown; trendBody?: unknown; kpiStatus?: number; trendStatus?: number } = {}) {
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
+    const extra = extraResponse(url);
+    if (extra) return extra;
     if (url.endsWith('/dashboard/kpis')) return json(options.kpiBody === undefined ? kpis : options.kpiBody, options.kpiStatus ?? 200);
     if (url.endsWith('/dashboard/trends')) return json(options.trendBody === undefined ? trends : options.trendBody, options.trendStatus ?? 200);
     throw new Error('Unexpected URL: ' + url);
@@ -46,6 +55,7 @@ describe('dashboard contracts', () => {
     expect(parseKpis({})).toBeNull();
     expect(parseKpis(null)).toBeNull();
     expect(() => parseKpis({ ...kpis, activeRentals: '12' })).toThrow('invalid KPI');
+    expect(() => parseKpis({ ...kpis, activeRentals: 1.5 })).toThrow('invalid KPI counts');
     expect(() => parseKpis({ ...kpis, todayRevenue: Infinity })).toThrow('invalid KPI');
     expect(() => parseKpis({ ...kpis, totalDebtBreakdown: {} })).toThrow('debt breakdown');
   });
@@ -91,19 +101,19 @@ describe('live dashboard', () => {
     expect((screen.getByRole('button', { name: 'Refreshing…' }) as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it('fetches both endpoints again on refresh and replaces old numbers', async () => {
+  it('fetches all five endpoints again on refresh and replaces old numbers', async () => {
     const fetchMock = mockDashboard();
     const { container } = render(<Dashboard />);
     await screen.findByText('1,234.56 AED');
-    fetchMock.mockImplementation(async input => String(input).endsWith('/kpis')
+    fetchMock.mockImplementation(async input => extraResponse(String(input)) ?? (String(input).endsWith('/kpis')
       ? json({ ...kpis, activeRentals: 14 })
-      : json({ ...trends, rentalTrends: [{ date: '2026-09-13', count: 9 }] }));
+      : json({ ...trends, rentalTrends: [{ date: '2026-09-13', count: 9 }] })));
     await userEvent.click(screen.getByRole('button', { name: 'Refresh dashboard' }));
     expect(await screen.findByText('14')).toBeTruthy();
     expect(container.querySelector('.kpi-card dd')?.textContent).toBe('14');
     await userEvent.click(screen.getByText('View new rentals data'));
     expect(within(screen.getByRole('table', { name: 'New rentals source values' })).getByText('9')).toBeTruthy();
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock).toHaveBeenCalledTimes(10);
   });
 
   it('keeps the trend section available if KPIs fail, and retries only KPIs', async () => {
@@ -114,7 +124,7 @@ describe('live dashboard', () => {
     fetchMock.mockImplementation(async () => json(kpis));
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByText('1,234.56 AED')).toBeTruthy();
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(6);
   });
 
   it('keeps KPIs available if trends fail', async () => {
@@ -139,12 +149,12 @@ describe('live dashboard', () => {
     expect(container.querySelectorAll('.kpi-card')).toHaveLength(0);
   });
 
-  it('aborts both requests when leaving the page and ignores late responses', async () => {
+  it('aborts all requests when leaving the page and ignores late responses', async () => {
     const requests: { options: RequestInit; resolve: (value: Response) => void }[] = [];
     vi.stubGlobal('fetch', vi.fn((_input, options) => new Promise<Response>(resolve => requests.push({ options, resolve }))));
     const { unmount } = render(<Dashboard />);
     unmount();
-    expect(requests).toHaveLength(2);
+    expect(requests).toHaveLength(5);
     expect(requests.every(request => request.options.signal?.aborted)).toBe(true);
     await act(async () => { requests[0].resolve(json(kpis)); requests[1].resolve(json(trends)); });
     expect(screen.queryByRole('heading', { name: 'Dashboard' })).toBeNull();
@@ -155,6 +165,8 @@ describe('dashboard route security', () => {
   function setup(codes: string[], expire = false) {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      const extra = extraResponse(url);
+      if (extra) return extra;
       if (url.endsWith('/auth/me')) return json({ id: 'admin-1', username: 'operator', fullName: 'Operator', email: null, isSuperAdmin: false });
       if (url.endsWith('/permissions/my-permissions')) return json({ adminId: 'admin-1', isSuperAdmin: false, permissionCodes: codes });
       if (url.endsWith('/dashboard/kpis')) return expire ? json({ message: 'Session expired' }, 401) : json(kpis);
