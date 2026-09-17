@@ -24,6 +24,12 @@ export function parseKpis(value: unknown): Kpis | null {
   if (!isRecord(value) || !kpiKeys.every(key => isNumber(value[key]))) {
     throw new Error('The server returned invalid KPI data.');
   }
+  const countKeys: KpiKey[] = ['totalMembers', 'totalCars', 'activeRentals', 'activeReservations',
+    'openSupportTickets', 'totalDeliveryDrivers', 'onlineDrivers', 'pendingVerificationCount',
+    'iosUsers', 'androidUsers', 'approvedMembers'];
+  if (!countKeys.every(key => Number.isSafeInteger(value[key]))) {
+    throw new Error('The server returned invalid KPI counts.');
+  }
   const debt = value.totalDebtBreakdown;
   if (!isRecord(debt) || !isNumber(debt.customer) || !isNumber(debt.company)) {
     throw new Error('The server returned an invalid debt breakdown.');

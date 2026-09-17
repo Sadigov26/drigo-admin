@@ -1,7 +1,11 @@
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: #24282d;
-  background: #f5f6f8;
+  background: #f7f8f5;
+  --accent: #365e50;
+  --soft-sage: #edf4ee;
+  --soft-blue: #edf3f8;
+  --soft-sand: #faf3e5;
   font-size: 14px;
   line-height: 1.5;
   font-synthesis: none;
@@ -13,7 +17,7 @@ a { color: inherit; }
 h1, h2, h3, p { margin: 0; }
 button { font: inherit; cursor: pointer; }
 
-button:focus-visible, a:focus-visible {
+button:focus-visible, a:focus-visible, summary:focus-visible {
   outline: 2px solid #426b9c;
   outline-offset: 3px;
 }
@@ -48,8 +52,8 @@ button:focus-visible, a:focus-visible {
 .sidebar nav { margin-top: 38px; }
 .sidebar nav { overflow-y: auto; min-height: 0; }
 .sidebar nav a { display: block; padding: 9px 12px; border-radius: 4px; text-decoration: none; }
-.sidebar nav a:hover { background: #f3f4f6; }
-.sidebar nav a.active { background: #edf0f4; font-weight: 600; }
+.sidebar nav a:hover { background: #f4f6f2; }
+.sidebar nav a.active { background: var(--soft-sage); color: #2c5547; font-weight: 600; box-shadow: inset 3px 0 #6f9583; }
 .sidebar-footer { margin-top: auto; padding: 12px 10px 0; color: #686f77; font-size: 12px; }
 .main-shell { flex: 1; min-width: 0; margin-left: 210px; }
 
@@ -102,7 +106,7 @@ button, .button-link {
 }
 
 button:hover, .button-link:hover { background: #f3f5f7; }
-button:disabled { color: #6b727a; cursor: wait; background: #f5f6f8; }
+button:disabled { color: #6b727a; cursor: not-allowed; background: #f5f6f8; }
 .panel-body { padding: 8px 20px 20px; }
 .connection-details { margin: 0; }
 .connection-details > div { display: grid; grid-template-columns: 190px 1fr; gap: 16px; padding: 12px 0; }
@@ -151,8 +155,8 @@ button:disabled { color: #6b727a; cursor: wait; background: #f5f6f8; }
 .form-field input:disabled { background: #f5f6f8; }
 .field-help, .auth-footnote { margin-top: 8px; color: #626a74; font-size: 12px; }
 .auth-footnote { margin-top: 20px; }
-.primary-button { width: 100%; min-height: 40px; border-color: #303b49; background: #303b49; color: #fff; }
-.primary-button:hover:not(:disabled) { background: #222c38; }
+.primary-button { width: 100%; min-height: 40px; border-color: var(--accent); background: var(--accent); color: #fff; }
+.primary-button:hover:not(:disabled) { background: #294a3e; }
 .primary-button:disabled { background: #dfe3e8; border-color: #c6cdd5; }
 .auth-back { display: inline-block; margin-top: 22px; font-size: 13px; text-underline-offset: 3px; }
 .session-screen { max-width: 480px; margin: 10vh auto; padding: 24px; }
@@ -171,20 +175,23 @@ button:disabled { color: #6b727a; cursor: wait; background: #f5f6f8; }
 .state-error p { color: #94362f; margin-bottom: 12px; }
 .sidebar .content-state { padding: 12px; font-size: 12px; }
 .data-table { border: 1px solid #d8dde3; border-radius: 5px; background: #fff; }
-.table-toolbar { padding: 16px; border-bottom: 1px solid #e3e6ea; }
+.table-toolbar { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px 20px; padding: 14px 16px; border-bottom: 1px solid #e3e6ea; }
+.table-search { flex: 1 1 220px; max-width: 320px; min-width: 0; }
 .table-toolbar label { display: block; margin-bottom: 6px; font-size: 13px; }
 .table-toolbar input { width: 100%; max-width: 300px; padding: 8px 10px; border: 1px solid #adb6c0; border-radius: 4px; font: inherit; }
 .table-toolbar input:focus-visible { outline: 2px solid #426b9c; outline-offset: 2px; }
-.table-scroll { overflow-x: auto; }
+.table-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+.table-scroll:focus-visible { outline: 2px solid #426b9c; outline-offset: -2px; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
 th, td { padding: 12px 16px; border-bottom: 1px solid #e3e6ea; }
-th { background: #f7f8fa; font-weight: 600; font-size: 13px; }
+th { background: #f2f5f1; font-weight: 600; font-size: 13px; }
+tbody tr:hover { background: #f8faf7; }
 th button { padding: 0; border: 0; background: transparent; font-weight: 600; text-align: left; }
 th button:hover { text-decoration: underline; }
 td { font-size: 13px; overflow-wrap: anywhere; }
 .table-link { border: 0; background: transparent; padding: 0; text-align: left; color: #315d88; text-decoration: underline; text-underline-offset: 3px; }
 .table-pagination { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 14px 16px; color: #626a74; font-size: 12px; }
-.table-pagination > div { display: flex; align-items: center; gap: 12px; }
+.table-pagination > div { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .status-badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 12px; }
 .status-success { background: #edf5ee; color: #28623b; }
 .status-warning { background: #fff4d9; color: #795610; }

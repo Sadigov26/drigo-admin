@@ -4,13 +4,19 @@ import { getKpis, getTrends } from './dashboardApi';
 import { KpiCards } from './KpiCards';
 import { TrendChart } from './TrendChart';
 import { useDashboardResource } from './useDashboardResource';
+import { getFleet, getOnlineUsers, getRecentActivity } from './operationsApi';
+import { FleetPanel, OnlineUsersPanel, RecentActivityPanel } from './OperationsPanels';
 import './dashboard.css';
 
 export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const kpis = useDashboardResource(getKpis, refreshKey);
   const trends = useDashboardResource(getTrends, refreshKey);
-  const loading = kpis.state.status === 'loading' || trends.state.status === 'loading';
+  const fleet = useDashboardResource(getFleet, refreshKey);
+  const onlineUsers = useDashboardResource(getOnlineUsers, refreshKey);
+  const recentActivity = useDashboardResource(getRecentActivity, refreshKey);
+  const loading = [kpis.state, trends.state, fleet.state, onlineUsers.state, recentActivity.state]
+    .some(state => state.status === 'loading');
   return <div className="dashboard">
     <div className="dashboard-heading">
       <div><h1>Dashboard</h1><p className="page-description">Rental operations and revenue</p></div>
@@ -38,6 +44,9 @@ export default function Dashboard() {
         </div>
       </>}
     </section>
+    <FleetPanel state={fleet.state} retry={fleet.retry} />
+    <OnlineUsersPanel state={onlineUsers.state} retry={onlineUsers.retry} />
+    <RecentActivityPanel state={recentActivity.state} retry={recentActivity.retry} />
     {kpis.state.status === 'ready' && kpis.state.data && <KpiCards data={kpis.state.data} detail />}
   </div>;
 }

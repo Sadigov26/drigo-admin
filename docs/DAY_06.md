@@ -4,7 +4,7 @@
 
 Handbook Sections 5, 6 and 8.3 cover listing, detail, create/update/delete, null guards, confirmation, errors and refreshing after mutations. Day 6 is our work breakdown, not a numbered day in the PDF. Tracking, commands, problematic cars and active-status transitions are still separate Cars work; the whole module is not finished yet.
 
-This branch was created from updated main at `a18838e` after Day 4 merged. Day 5 remains separate and was an open PR when this work started. No Day 5 files were copied into this branch. Reconcile with updated main before the Day 6 PR. Do not push directly to main.
+This branch was created from updated main at `a18838e` after Day 4 merged. Day 5 was an open PR when work started; after its merge, main at `75f8f87` was merged into this feature branch before publishing. The Day 6 PR diff contains only Day 6 changes. Do not push directly to main.
 
 ## Actual API contracts
 
@@ -29,7 +29,7 @@ The shared Table, Modal, StatusBadge and state components are reused. Tables scr
 ## Verification
 
 - Authenticated curl checked the list and car 1 detail; a status query confirmed that the backend ignores that parameter. Temporary curl cookies were removed after logout.
-- Verification on 17 September 2026: 59 tests (including 13 Cars tests) passed after detail/toolbar polish. TypeScript and production build passed. `git diff --check` passed.
+- Verification on 17 September 2026: 74 tests (including 13 Cars tests) passed after integrating Day 5 from main. TypeScript and production build passed. `git diff --check` passed.
 - Cars tests cover response validation, nulls/zero, cookies/query parameters, multi-page filtering, CRUD methods, 401, safe detail rendering, view-only permissions, delete confirmation/409, delete refresh, list retry/empty results and dependent form choices.
 - Browser checks: real list/detail, lookup-backed creation, edit followed by reopened detail showing the saved maximum speed, deletion and refreshed list; inactive filtering and search-empty state; desktop and 390px mobile layout with no page/dialog horizontal overflow. Browser console checks returned no warnings or errors.
 - Temporary car `DAY6-QA-0916` was created for QA, updated from 180 to 190 km/h and deleted through the confirm dialog. Existing cars were not edited or deleted by these checks. The backend simulator continued running independently.
