@@ -11,6 +11,7 @@ function setup(codes: string[], path = '/', superAdmin = false, failPermissions 
     const url = String(input);
     if (url.endsWith('/auth/me')) return json(admin);
     if (url.endsWith('/api/health')) return json({ status: 'ok' });
+    if (url.includes('/api/admin/cars?')) return json({ data: [], total: 0, page: 1, pageSize: 10 });
     if (url.endsWith('/permissions/my-permissions')) {
       if (failPermissions) return json({ message: 'Permissions unavailable' }, 503);
       return json({ adminId: admin.id, isSuperAdmin: superAdmin, permissionCodes: codes });
@@ -66,7 +67,7 @@ describe('permission navigation', () => {
     expect(screen.queryByRole('link', { name: 'Cars' })).toBeNull();
     recover();
     await userEvent.click(within(screen.getByRole('main')).getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByText('This module has not been implemented yet.')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Cars' })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Cars' })).toBeTruthy();
   });
 

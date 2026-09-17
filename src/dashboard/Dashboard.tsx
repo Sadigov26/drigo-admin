@@ -31,7 +31,7 @@ export default function Dashboard() {
       {trends.state.status === 'loading' && <LoadingState message="Loading trends…" />}
       {trends.state.status === 'error' && <ErrorState message={trends.state.message} onRetry={trends.retry} />}
       {trends.state.status === 'ready' && <>
-        <p className="dashboard-updated">Trends fetched at {trends.state.loadedAt.toLocaleTimeString('en-GB')} · Dates as supplied by the backend</p>
+        <p className="dashboard-updated">Trends updated at {trends.state.loadedAt.toLocaleTimeString('en-GB')}</p>
         <div className="trend-grid">
           <TrendChart title="Revenue" data={trends.state.data.revenue} currency />
           <TrendChart title="New rentals" data={trends.state.data.rentals} />
@@ -39,6 +39,5 @@ export default function Dashboard() {
       </>}
     </section>
     {kpis.state.status === 'ready' && kpis.state.data && <KpiCards data={kpis.state.data} detail />}
-    <p className="dashboard-note">Percentage changes are not supplied by this API.</p>
   </div>;
 }
