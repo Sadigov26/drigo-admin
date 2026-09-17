@@ -51,6 +51,7 @@ export function Overview() {
         <h1>Overview</h1>
         <p>Your admin account</p>
       </div>
+      <div className="overview-grid">
       <section className="connection-panel" aria-labelledby="connection-heading">
         <div className="panel-heading">
           <h2 id="connection-heading">Server connection</h2>
@@ -95,6 +96,7 @@ export function Overview() {
         </div>
       </section>
       <PermissionsTable />
+      </div>
     </>
   );
 }

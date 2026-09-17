@@ -64,4 +64,6 @@ Understand each change before committing. Work on at least 21 different days dur
 
 ## Next task
 
-Finish Day 4/5 PR review/merge, then start Cars list with the real pagination/filter/search API.
+This branch adds Cars list/detail and create/edit/delete. See `docs/DAY_06.md` for real API contracts, backend limitations and verification. Day 5 dashboard work was merged through its own PR and is included from updated main.
+
+Next Cars work: tracking, active-status transitions, commands and problematic cars. Complete PR review and merge before marking the module done.
