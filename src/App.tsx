@@ -12,6 +12,7 @@ import { ErrorState, LoadingState } from './components/States';
 
 const Dashboard = lazy(() => import('./dashboard/Dashboard'));
 const Cars = lazy(() => import('./cars/CarsModule'));
+const Catalog = lazy(() => import('./catalog/Catalog'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -108,7 +109,8 @@ export function App() {
                 <Route key={item.path} path={item.path} element={
                   <ModulePage title={item.label} permission={item.permission}>
                     {item.path === '/dashboard' ? <Suspense fallback={<LoadingState message="Loading dashboard…" />}><Dashboard /></Suspense>
-                      : item.path === '/cars' ? <Suspense fallback={<LoadingState message="Loading cars…" />}><Cars /></Suspense> : undefined}
+                      : item.path === '/cars' ? <Suspense fallback={<LoadingState message="Loading cars…" />}><Cars /></Suspense>
+                      : item.path === '/brands' ? <Suspense fallback={<LoadingState message="Loading catalog…" />}><Catalog /></Suspense> : undefined}
                   </ModulePage>
                 } />
               ))}

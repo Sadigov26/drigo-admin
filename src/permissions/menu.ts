@@ -2,6 +2,7 @@
 export const menuItems = [
   { label: 'Dashboard', path: '/dashboard', permission: 'dashboard.view' },
   { label: 'Cars', path: '/cars', permission: 'cars.view' },
+  { label: 'Brands & models', path: '/brands', permission: 'cars.view' },
   { label: 'Rentals', path: '/rentals', permission: 'rentals.view' },
   { label: 'Customers', path: '/customers', permission: 'customers.view' },
   { label: 'Debts', path: '/debts', permission: 'debts.view' },
