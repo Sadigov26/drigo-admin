@@ -1,0 +1,15 @@
+.cars-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.cars-tabs button[aria-pressed="true"] { background: #edf4ee; color: #365e50; border-color: #8ca799; }
+.vehicle-page-title { margin-bottom: 22px; }
+.vehicle-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.vehicle-section-heading h2, .vehicle-section-heading h3 { margin: 0; }
+.tracking-map { height: 460px; width: 100%; border: 1px solid #d8dde3; border-radius: 5px; z-index: 0; }
+.tracking-map .leaflet-popup-content { line-height: 1.6; }
+.tracking-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; margin: 12px 0; }
+.tracking-legend span:nth-child(1) { color: #28623b; }.tracking-legend span:nth-child(2) { color: #345f8b; }.tracking-legend span:nth-child(3) { color: #946500; }.tracking-legend span:nth-child(4) { color: #68717b; }.tracking-legend span:nth-child(5) { color: #6f4b94; }
+.vehicle-picker { display: block; max-width: 460px; margin: 20px 0 10px; font-size: 13px; }
+.vehicle-picker select { display: block; width: 100%; margin-top: 6px; padding: 10px; border: 1px solid #adb6c0; background: white; border-radius: 4px; font: inherit; }
+.vehicle-controls { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e3e6ea; }
+.command-confirm { margin-top: 16px; background: #faf3e5; border: 1px solid #d9c89d; padding: 14px; border-radius: 4px; }
+.command-confirm p { margin-bottom: 12px; }
+@media (max-width: 640px) { .tracking-map { height: 340px; }.vehicle-section-heading { align-items: flex-start; } }

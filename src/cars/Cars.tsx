@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Table } from '../components/Table';
 import type { Column } from '../components/Table';
 import { Modal } from '../components/Modal';
@@ -10,9 +10,11 @@ import { carStatus, deleteCar, getCar, getCars, saveCar } from './carsApi';
 import type { Car, CarDetail, Page, Query } from './carsApi';
 import { CarForm } from './CarForm';
 import { CarDetails } from './CarDetails';
+import { VehicleControls } from './VehicleControls';
 import './cars.css';
 
 type Selection = { mode: 'detail' | 'edit' | 'delete'; car: Car } | { mode: 'create' };
+const CarRoute = lazy(() => import('./CarRoute'));
 const initial: Query = { page: 1, pageSize: 10, search: '', sortBy: 'createdAt', sortOrder: 'desc', status: '' };
 const message = (cause: unknown) => cause instanceof Error ? cause.message : 'Unable to complete the request.';
 export default function Cars() {
@@ -110,7 +112,7 @@ export default function Cars() {
         : detailError ? <ErrorState message={detailError} onRetry={() => setDetailAttempt(value => value + 1)} />
         : !detail ? <LoadingState message="Loading car…" />
         : selection?.mode === 'edit' ? <CarForm car={detail} busy={busy} onSave={body => void save(body)} onCancel={close} />
-        : <CarDetails car={{ ...detail, activeRentalId: selection?.car.activeRentalId ?? null }} />}
+        : <><CarDetails car={{ ...detail, activeRentalId: selection?.car.activeRentalId ?? null }} /><VehicleControls key={detail.id} carId={detail.id} onChanged={() => { setDetailAttempt(value => value + 1); setRevision(value => value + 1); }} /><Suspense fallback={<LoadingState message="Loading map…" />}><CarRoute key={detail.id} carId={detail.id} /></Suspense></>}
     </Modal>
   </section>;
 }

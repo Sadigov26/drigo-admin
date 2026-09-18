@@ -11,7 +11,7 @@ import { ModulePage } from './permissions/ModulePage';
 import { ErrorState, LoadingState } from './components/States';
 
 const Dashboard = lazy(() => import('./dashboard/Dashboard'));
-const Cars = lazy(() => import('./cars/Cars'));
+const Cars = lazy(() => import('./cars/CarsModule'));
 
 function PageTitle() {
   const { pathname } = useLocation();
