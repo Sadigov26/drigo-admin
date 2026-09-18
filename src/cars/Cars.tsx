@@ -90,7 +90,7 @@ export default function Cars() {
     { key: 'brandName', label: 'Brand', sortable: true }, { key: 'modelName', label: 'Model', sortable: true },
     { key: 'isActive', label: 'Status', render: car => <StatusBadge status={carStatus(car)} /> },
     { key: 'city', label: 'Current city', render: car => car.city === undefined ? 'Loading…' : car.city ?? 'Not provided' },
-    { key: 'fuelLevel', label: 'Fuel', sortable: true, render: car => car.fuelLevel == null ? 'Not provided' : `${car.fuelLevel.toFixed(1)}%` },
+    { key: 'fuelLevel', label: 'Fuel', sortable: true, render: car => car.fuelLevel == null ? 'Not provided' : `${car.fuelLevel.toFixed(0)}%` },
     { key: 'id', label: 'Actions', render: car => <div className="car-row-actions">{can('cars.edit') && <button onClick={() => open({ mode: 'edit', car })} aria-label={`Edit ${car.plateNumber ?? car.id}`}>Edit</button>}{can('cars.delete') && <button onClick={() => open({ mode: 'delete', car })} aria-label={`Delete ${car.plateNumber ?? car.id}`}>Delete</button>}</div> },
   ];
   return <section className="cars-page">
