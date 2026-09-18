@@ -15,7 +15,7 @@ DRIGO internship frontend built with React, TypeScript and Vite.
 - Dashboard KPI cards and two live trend charts, with manual refresh and independent retries.
 - Fleet summary with city counts, online users, and separate recent rental/reservation/support lists.
 
-Business CRUD is not implemented yet. Dashboard code covers Section 8.2 and has passed automated checks and desktop/mobile review. The remaining PR workflow is still required before closing Week 1.
+Cars includes list/detail, create/edit/delete, tracking with GPS history, vehicle controls and a problematic-cars table. Dashboard code covers Section 8.2. See the daily notes for verification and outstanding review steps.
 
 ## Local setup
 
@@ -66,4 +66,4 @@ Understand each change before committing. Work on at least 21 different days dur
 
 This branch adds Cars list/detail and create/edit/delete. See `docs/DAY_06.md` for real API contracts, backend limitations and verification. Day 5 dashboard work was merged through its own PR and is included from updated main.
 
-Next Cars work: tracking, active-status transitions, commands and problematic cars. Complete PR review and merge before marking the module done.
+Day 7 adds tracking, detail GPS maps, active-status transitions, commands and problematic cars; see `docs/DAY_07.md` for contracts and mock limitations. Publishing and PR review remain separate steps. Complete PR review and merge before marking the module done. The next planned task is Brands/Models/Colors CRUD.
