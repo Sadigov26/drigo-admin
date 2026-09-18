@@ -1,5 +1,5 @@
 .cars-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-.cars-tabs button[aria-pressed="true"] { background: #edf4ee; color: #365e50; border-color: #8ca799; }
+.cars-tabs button[aria-pressed="true"] { background: #315d88; color: #fff; border-color: #315d88; }
 .vehicle-page-title { margin-bottom: 22px; }
 .vehicle-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
 .vehicle-section-heading h2, .vehicle-section-heading h3 { margin: 0; }
