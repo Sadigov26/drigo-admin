@@ -18,6 +18,8 @@
 .catalog-page > header .catalog-actions button:last-child { background: #365e50; color: white; border-color: #365e50; }
 .color-swatch { display: inline-block; width: 22px; height: 22px; border: 1px solid #aab2bc; border-radius: 4px; flex-shrink: 0; }
 .catalog-form label { display: grid; gap: 8px; margin-bottom: 20px; }
+.catalog-color-search { display: grid; gap: 6px; font-size: 13px; }
+.catalog-color-search input { width: 100%; padding: 8px 10px; border: 1px solid #adb6c0; border-radius: 4px; font: inherit; }
 .color-entry { display: flex; align-items: center; gap: 16px; }
 .color-entry label { flex: 1; min-width: 0; }
 .catalog-form input { padding: 10px; border: 1px solid #adb6c0; border-radius: 4px; font: inherit; width: 100%; }

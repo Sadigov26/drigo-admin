@@ -21,6 +21,7 @@ function mockServer() {
     if (options?.method === 'PUT' || options?.method === 'POST') return json({ id: 1 });
     if (url.pathname === '/api/admin/cars') return json(envelope([row]));
     if (url.pathname === '/api/admin/cars/1') return json(detail);
+    if (url.pathname === '/api/admin/cars/1/status') return json({ carId: 1, engineOn: false, doorsLocked: true, online: true, speed: 0, fuelLevel: 0, activeRentalId: 99 });
     if (url.pathname === '/api/admin/brands') return json({ data: [{ id: 1, name: 'Toyota' }], total: 1 });
     return json([{ id: 1, name: url.pathname === '/api/admin/cities' ? 'Dubai' : 'Option' }]);
   });
@@ -89,6 +90,8 @@ describe('Cars UI', () => {
     mockServer(); render(<Cars />);
     fireEvent.click(await screen.findByRole('button', { name: 'TEST-1' }));
     const modal = screen.getByRole('dialog'); expect(await within(modal).findByText('Max speed')).toBeTruthy();
+    expect(within(modal).getByText('Rented')).toBeTruthy();
+    expect(within(modal).getByText('#99')).toBeTruthy();
     expect(within(modal).getAllByText('—').length).toBeGreaterThan(0);
     cleanup(); render(<CarDetails car={{ id: 1, plateNumber: '<img src=x onerror=alert(1)>' }} />);
     expect(screen.getByText('<img src=x onerror=alert(1)>')).toBeTruthy(); expect(document.querySelector('img')).toBeNull();

@@ -13,6 +13,7 @@ import { ErrorState, LoadingState } from './components/States';
 const Dashboard = lazy(() => import('./dashboard/Dashboard'));
 const Cars = lazy(() => import('./cars/CarsModule'));
 const Catalog = lazy(() => import('./catalog/Catalog'));
+const Rentals = lazy(() => import('./rentals/Rentals'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -110,7 +111,8 @@ export function App() {
                   <ModulePage title={item.label} permission={item.permission}>
                     {item.path === '/dashboard' ? <Suspense fallback={<LoadingState message="Loading dashboard…" />}><Dashboard /></Suspense>
                       : item.path === '/cars' ? <Suspense fallback={<LoadingState message="Loading cars…" />}><Cars /></Suspense>
-                      : item.path === '/brands' ? <Suspense fallback={<LoadingState message="Loading catalog…" />}><Catalog /></Suspense> : undefined}
+                      : item.path === '/brands' ? <Suspense fallback={<LoadingState message="Loading catalog…" />}><Catalog /></Suspense>
+                      : item.path === '/rentals' ? <Suspense fallback={<LoadingState message="Loading rentals…" />}><Rentals /></Suspense> : undefined}
                   </ModulePage>
                 } />
               ))}

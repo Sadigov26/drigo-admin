@@ -15,11 +15,18 @@ function BrandContents({ brand, revision, onAdd, onAddColor }: { brand: Brand; r
   const loadColors = useCallback((signal: AbortSignal) => getColors(brand.id, signal), [brand.id, revision]);
   const models = useVehicleResource(loadModels);
   const colors = useVehicleResource(loadColors);
+  const [colorSearch, setColorSearch] = useState('');
+  const [colorPage, setColorPage] = useState(1);
+  const filteredColors = (colors.data ?? []).filter(color => `${color.name} ${color.hexCode}`.toLowerCase().includes(colorSearch.trim().toLowerCase()));
+  const colorPages = Math.max(1, Math.ceil(filteredColors.length / 6));
+  const currentColorPage = Math.min(colorPage, colorPages);
   return <section className="catalog-details" aria-label={`${brand.name} details`}>
     <header><h2>{brand.name} models</h2>{onAdd && <button onClick={onAdd}>Add model</button>}</header>
     {models.loading ? <LoadingState /> : models.error ? <ErrorState message={models.error} onRetry={models.refresh} /> : models.data?.length ? <ul>{models.data.map(model => <li key={model.id}>{model.name}</li>)}</ul> : <EmptyState message="No models yet." />}
     <header><h3>Colors</h3>{onAddColor && <button onClick={onAddColor}>Add color</button>}</header>
-    {colors.loading ? <LoadingState /> : colors.error ? <ErrorState message={colors.error} onRetry={colors.refresh} /> : colors.data?.length ? <ul className="catalog-colors">{colors.data.map(color => <li key={color.id}><span className="color-swatch" style={{ backgroundColor: color.hexCode }} aria-hidden="true" />{color.name} <small>{color.hexCode}</small></li>)}</ul> : <EmptyState message="No colors for this brand." />}
+    <label className="catalog-color-search">Search colors<input type="search" value={colorSearch} onChange={event => { setColorSearch(event.target.value); setColorPage(1); }} /></label>
+    {colors.loading ? <LoadingState /> : colors.error ? <ErrorState message={colors.error} onRetry={colors.refresh} /> : filteredColors.length ? <ul className="catalog-colors">{filteredColors.slice((currentColorPage - 1) * 6, currentColorPage * 6).map(color => <li key={color.id}><span className="color-swatch" style={{ backgroundColor: color.hexCode }} aria-hidden="true" />{color.name} <small>{color.hexCode}</small></li>)}</ul> : <EmptyState message={colorSearch ? 'No matching colors.' : 'No colors for this brand.'} />}
+    {!colors.loading && !colors.error && <div className="table-pagination"><span>{filteredColors.length} colors</span><div><button disabled={currentColorPage <= 1} onClick={() => setColorPage(currentColorPage - 1)}>Previous colors</button><span>{currentColorPage} / {colorPages}</span><button disabled={currentColorPage >= colorPages} onClick={() => setColorPage(currentColorPage + 1)}>Next colors</button></div></div>}
   </section>;
 }
 

@@ -11,6 +11,7 @@ import type { Car, CarDetail, Page, Query } from './carsApi';
 import { CarForm } from './CarForm';
 import { CarDetails } from './CarDetails';
 import { VehicleControls } from './VehicleControls';
+import { getStatus } from './telematicsApi';
 import './cars.css';
 
 type Selection = { mode: 'detail' | 'edit' | 'delete'; car: Car } | { mode: 'create' };
@@ -61,7 +62,10 @@ export default function Cars() {
     setDetail(null); setDetailError('');
     if (selectedId == null || selection?.mode === 'delete') return;
     const controller = new AbortController();
-    getCar(selectedId, controller.signal).then(data => { if (!controller.signal.aborted) setDetail(data); })
+    const request = selection?.mode === 'detail'
+      ? Promise.all([getCar(selectedId, controller.signal), getStatus(selectedId, controller.signal)]).then(([car, status]) => ({ ...car, activeRentalId: status.activeRentalId }))
+      : getCar(selectedId, controller.signal);
+    request.then(data => { if (!controller.signal.aborted) setDetail(data); })
       .catch(cause => { if (!controller.signal.aborted) setDetailError(message(cause)); });
     return () => controller.abort();
   }, [selectedId, selection?.mode, detailAttempt]);
@@ -112,7 +116,7 @@ export default function Cars() {
         : detailError ? <ErrorState message={detailError} onRetry={() => setDetailAttempt(value => value + 1)} />
         : !detail ? <LoadingState message="Loading car…" />
         : selection?.mode === 'edit' ? <CarForm car={detail} busy={busy} onSave={body => void save(body)} onCancel={close} />
-        : <><CarDetails car={{ ...detail, activeRentalId: selection?.car.activeRentalId ?? null }} /><VehicleControls key={detail.id} carId={detail.id} onChanged={() => { setDetailAttempt(value => value + 1); setRevision(value => value + 1); }} /><Suspense fallback={<LoadingState message="Loading map…" />}><CarRoute key={detail.id} carId={detail.id} /></Suspense></>}
+        : <><CarDetails car={detail} /><VehicleControls key={detail.id} carId={detail.id} onChanged={() => { setDetailAttempt(value => value + 1); setRevision(value => value + 1); }} /><Suspense fallback={<LoadingState message="Loading map…" />}><CarRoute key={detail.id} carId={detail.id} /></Suspense></>}
     </Modal>
   </section>;
 }
