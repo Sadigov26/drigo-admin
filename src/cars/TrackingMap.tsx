@@ -8,7 +8,7 @@ export function markerColor(car: TrackedCar) {
   if (car.fuelLevel < 20) return '#a77710';
   return car.status === 'Rented' ? '#345f8b' : '#28623b';
 }
-export function TrackingMap({ cars, selected, points, onSelect }: { cars: TrackedCar[]; selected: number | null; points: Point[]; onSelect: (id: number) => void }) {
+export function TrackingMap({ cars, selected, points, onSelect }: { cars: TrackedCar[]; selected: number | null; points: Pick<Point, 'latitude' | 'longitude'>[]; onSelect: (id: number) => void }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const markers = useRef<L.LayerGroup | null>(null);
