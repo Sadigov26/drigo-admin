@@ -47,6 +47,23 @@ it('collects all pages before client-side search', async () => {
   expect(String(fetcher.mock.calls[1][0])).toContain('page=2');
   expect(fetcher.mock.calls[0][1].credentials).toBe('include');
 });
+it('paginates and searches brand colors without a standalone colors endpoint', async () => {
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input);
+    if (url.includes('/brands?')) return json({ data: [{ id: 1, name: 'Toyota' }], total: 1 });
+    if (url.endsWith('/brands/1/colors')) return json(Array.from({ length: 7 }, (_, index) => ({ id: index + 1, brandId: 1, name: `Shade ${index + 1}`, hexCode: '#123456' })));
+    return json([]);
+  }));
+  render(<Catalog />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Toyota' }));
+  await screen.findByText('Shade 1');
+  expect(screen.queryByText('Shade 7')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Next colors' }));
+  expect(screen.getByText('Shade 7')).toBeTruthy();
+  fireEvent.change(screen.getByRole('searchbox', { name: 'Search colors' }), { target: { value: 'Shade 2' } });
+  expect(screen.getByText('Shade 2')).toBeTruthy();
+  expect(screen.queryByText('Shade 7')).toBeNull();
+});
 it('rejects incomplete pages and wrong-brand models', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ data: [], total: 2 })));
   await expect(getBrands()).rejects.toThrow('Incomplete');
@@ -81,6 +98,6 @@ it('searches brands, expands models and refreshes after creation', async () => {
   fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'New' } });
   fireEvent.click(screen.getByRole('button', { name: 'Save' }));
   await screen.findByText('New');
-  fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'missing' } });
+  fireEvent.change(screen.getByRole('searchbox', { name: 'Search brands' }), { target: { value: 'missing' } });
   await waitFor(() => expect(screen.queryByRole('button', { name: 'Toyota' })).toBeNull());
 });
