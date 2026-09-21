@@ -5,10 +5,14 @@ import { StatusBadge } from '../components/StatusBadge';
 import RentalDetails, { date, money, text } from './RentalDetails';
 import { getRentals, statuses } from './rentalsApi';
 import type { Page, Query } from './rentalsApi';
+import { usePermissions } from '../permissions/PermissionsContext';
+import { Icon } from '../components/Icon';
 import './rentals.css';
 
 const initial: Query = { page: 1, pageSize: 10, search: '', status: '', sortBy: 'startDate', sortOrder: 'desc' };
 export default function Rentals() {
+  const { can } = usePermissions();
+  const [actionBusy, setActionBusy] = useState(false);
   const [query, setQuery] = useState(initial);
   const [data, setData] = useState<Page>({ data: [], total: 0, page: 1, pageSize: 10 });
   const [loading, setLoading] = useState(true);
@@ -25,8 +29,8 @@ export default function Rentals() {
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
   }, [query, attempt]);
-  return <section className="rentals-page"><header className="rentals-heading"><div><h1>Rentals</h1><p>Trips, payments and rental history</p></div><button disabled={loading} onClick={() => setAttempt(value => value + 1)}>Refresh rentals</button></header>
-    <Table caption="Rentals" columns={[
+  return <section className="rentals-page"><header className="rentals-heading"><div><h1>Rentals</h1><p>Trips, payments and rental history</p></div><button disabled={loading} onClick={() => setAttempt(value => value + 1)}><Icon name="refresh" />Refresh rentals</button></header>
+    <Table caption="Rentals" onRowClick={row => setSelected(row.id)} columns={[
       { key: 'id', label: 'Rental', render: row => <button className="table-link" onClick={() => setSelected(row.id)}>#{row.id}</button> },
       { key: 'user', label: 'Customer', render: row => text(row.user?.fullName) },
       { key: 'car', label: 'Plate', render: row => text(row.car?.plateNumber) },
@@ -46,6 +50,6 @@ export default function Rentals() {
         <button onClick={() => setQuery(initial)}>Clear filters</button>
       </>} />
     {(query.minHours || query.maxHours) && <p className="rental-note">Duration is start to end; ongoing rentals use the time of refresh.</p>}
-    <Modal isOpen={selected != null} title={`Rental #${selected ?? ''}`} onClose={() => setSelected(null)}>{selected != null && <RentalDetails key={selected} rentalId={selected} />}</Modal>
+    <Modal isOpen={selected != null} title={`Rental #${selected ?? ''}`} onClose={() => { if (!actionBusy) setSelected(null); }}>{selected != null && <RentalDetails key={selected} rentalId={selected} canEdit={can('rentals.edit')} onBusy={setActionBusy} onChanged={() => setAttempt(value => value + 1)} />}</Modal>
   </section>;
 }
