@@ -80,6 +80,21 @@ describe('Cars API contracts', () => {
   });
 });
 describe('Cars UI', () => {
+  it('opens details from a row while Edit and Delete keep their own dialogs', async () => {
+    mockServer(); render(<Cars />);
+    fireEvent.click(await screen.findByText('Toyota'));
+    const modal = await screen.findByRole('dialog', { name: 'Car details' });
+    await within(modal).findByRole('button', { name: 'Technical details' });
+    expect(within(modal).queryByText('Engine Capacity')).toBeNull();
+    fireEvent.click(within(modal).getByRole('button', { name: 'Technical details' }));
+    expect(within(modal).getByText('Engine Capacity')).toBeTruthy();
+    fireEvent.click(within(modal).getByRole('button', { name: 'Close dialog' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit TEST-1' }));
+    expect(screen.getByRole('dialog', { name: 'Edit car' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Close dialog' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete TEST-1' }));
+    expect(screen.getByRole('dialog', { name: 'Delete car' })).toBeTruthy();
+  });
   it('formats summary values and renders feature names without internal metadata', () => {
     render(<CarDetails car={{ ...detail, fuelLevel: 15.99000000000002, price: 199, tariffPackageId: 5, carFeatures: [{ id: 4, name: 'Sunroof', icon: null }] }} />);
     expect(screen.getByText('16%')).toBeTruthy(); expect(screen.getByText('199 AED')).toBeTruthy();

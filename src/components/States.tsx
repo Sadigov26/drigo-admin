@@ -1,3 +1,5 @@
+import { Icon } from './Icon';
+
 export function LoadingState({ message = 'Loading…' }: { message?: string }) {
   return <div className="content-state" role="status">{message}</div>;
 }
@@ -10,7 +12,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry: () 
   return (
     <div className="content-state state-error">
       <p role="alert">{message}</p>
-      <button type="button" onClick={onRetry}>Try again</button>
+      <button type="button" onClick={onRetry}><Icon name="refresh" />Try again</button>
     </div>
   );
 }

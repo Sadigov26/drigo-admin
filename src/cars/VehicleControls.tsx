@@ -5,8 +5,11 @@ import { useVehicleResource } from './useVehicleResource';
 import { usePermissions } from '../permissions/PermissionsContext';
 import { ErrorState, LoadingState } from '../components/States';
 import { StatusBadge } from '../components/StatusBadge';
+import { Icon } from '../components/Icon';
+import type { IconName } from '../components/Icon';
+const commandIcons: Record<string, IconName> = { lock: 'lock', unlock: 'unlock', engine_on: 'power', engine_off: 'power', locate: 'map' };
 
-export function VehicleControls({ carId, onChanged }: { carId: number; onChanged?: () => void }) {
+export function VehicleControls({ carId, onChanged, onBusy }: { carId: number; onChanged?: () => void; onBusy?: (busy: boolean) => void }) {
   const { can } = usePermissions();
   const load = useCallback(async (signal: AbortSignal) => {
     const [status, activity, car] = await Promise.all([getStatus(carId, signal), getActivity(carId, signal), getCar(carId, signal)]);
@@ -24,15 +27,15 @@ export function VehicleControls({ carId, onChanged }: { carId: number; onChanged
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   async function execute() {
     if (!pending || lock.current || !can('cars.edit')) return;
-    lock.current = true; setBusy(true); setError(''); setMessage('');
+    lock.current = true; setBusy(true); onBusy?.(true); setError(''); setMessage('');
     try {
       if (pending === 'toggle') await toggleActive(carId); else await sendCommand(carId, pending);
       if (alive.current) { setPending(null); setMessage(pending === 'toggle' ? 'Availability updated.' : 'Command accepted.'); resource.refresh(); onChanged?.(); }
     } catch (cause) { if (alive.current) { setError(cause instanceof Error ? cause.message : 'Action failed.'); resource.refresh(); } }
-    finally { lock.current = false; if (alive.current) setBusy(false); }
+    finally { lock.current = false; onBusy?.(false); if (alive.current) setBusy(false); }
   }
   const data = resource.data;
-  return <section className="vehicle-controls"><div className="vehicle-section-heading"><h3>Vehicle status</h3><button disabled={busy || resource.loading} onClick={resource.refresh}>Refresh status</button></div>
+  return <section className="vehicle-controls"><div className="vehicle-section-heading"><h3>Vehicle status</h3><button disabled={busy || resource.loading} onClick={resource.refresh}><Icon name="refresh" />Refresh status</button></div>
     <label><input type="checkbox" checked={automatic} onChange={event => setAutomatic(event.target.checked)} /> Auto-refresh status · 10s</label>
     {resource.loading && <LoadingState message="Loading vehicle status…" />}
     {resource.error && <ErrorState message={resource.error} onRetry={resource.refresh} />}
@@ -50,8 +53,8 @@ export function VehicleControls({ carId, onChanged }: { carId: number; onChanged
     {can('cars.edit') && <>
       {commands.error && <ErrorState message={commands.error} onRetry={commands.refresh} />}
       {commands.loading && <LoadingState message="Loading commands…" />}
-      <div className="car-actions">{commands.data?.map(command => <button key={command.code} disabled={busy || !data || resource.loading || !!resource.error} onClick={() => setPending(command.code)}>{command.name}</button>)}
-        <button disabled={busy || !data || resource.loading || !!resource.error} onClick={() => setPending('toggle')}>{data?.active ? 'Deactivate car' : 'Activate car'}</button></div>
+      <div className="car-actions vehicle-command-grid">{commands.data?.map(command => <button key={command.code} disabled={busy || !data || resource.loading || !!resource.error} onClick={() => setPending(command.code)}><Icon name={commandIcons[command.code] ?? 'settings'} />{command.name}</button>)}
+        <button className={data?.active ? 'car-delete-action' : 'btn-primary'} disabled={busy || !data || resource.loading || !!resource.error} onClick={() => setPending('toggle')}><Icon name="power" />{data?.active ? 'Deactivate car' : 'Activate car'}</button></div>
       {pending && <div className="command-confirm"><p>{pending === 'toggle' ? 'Change this car’s availability?' : `Send “${commands.data?.find(command => command.code === pending)?.name ?? pending}” to this car?`}</p><div className="car-actions"><button disabled={busy} onClick={() => setPending(null)}>Cancel action</button><button disabled={busy} onClick={() => void execute()}>{busy ? 'Sending…' : 'Confirm action'}</button></div></div>}
     </>}
   </section>;

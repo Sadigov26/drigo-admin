@@ -1,6 +1,7 @@
 import { useEffect, useId } from 'react';
 import type { ReactNode } from 'react';
 import { EmptyState, ErrorState, LoadingState } from './States';
+import { Icon } from './Icon';
 
 export type SortOrder = 'asc' | 'desc';
 export type Column<T> = {
@@ -28,11 +29,12 @@ export type TableProps<T> = {
   onSearch: (search: string) => void;
   onRetry: () => void;
   filters?: ReactNode;
+  onRowClick?: (row: T) => void;
 };
 
 // Parents own query state and fetching. This component never invents API parameters.
 export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize, loading,
-  error, search, sortBy, sortOrder, onPageChange, onSort, onSearch, onRetry, filters }: TableProps<T>) {
+  error, search, sortBy, sortOrder, onPageChange, onSort, onSearch, onRetry, filters, onRowClick }: TableProps<T>) {
   const searchId = useId();
   const pageCount = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
 
@@ -46,7 +48,7 @@ export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize
     <div className="data-table">
       <div className="table-toolbar">
         <div className="table-search">
-        <label htmlFor={searchId}>Search {caption.toLowerCase()}</label>
+        <label htmlFor={searchId}><Icon name="search" />Search {caption.toLowerCase()}</label>
         <input id={searchId} type="search" value={search} onChange={event => {
           onSearch(event.target.value);
           onPageChange(1);
@@ -75,7 +77,11 @@ export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize
                 </th>
               ))}</tr></thead>
               <tbody>{data.map(row => (
-                <tr key={rowKey(row)}>{columns.map(column => (
+                <tr key={rowKey(row)} className={onRowClick ? 'clickable-row' : undefined} onClick={onRowClick ? event => {
+                  // Keep links, buttons and text selection independent of the row shortcut.
+                  if ((event.target as HTMLElement).closest('button, a, input, select, textarea, summary') || window.getSelection()?.toString()) return;
+                  onRowClick(row);
+                } : undefined}>{columns.map(column => (
                   <td key={column.key}>{column.render ? column.render(row) : String(row[column.key] ?? '—')}</td>
                 ))}</tr>
               ))}</tbody>
@@ -85,9 +91,9 @@ export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize
       <div className="table-pagination">
         <span>{loading ? 'Loading results…' : error ? 'Results unavailable' : `${total} results`}</span>
         <div>
-          <button type="button" disabled={loading || !!error || page <= 1} onClick={() => onPageChange(page - 1)}>Previous</button>
+          <button type="button" disabled={loading || !!error || page <= 1} onClick={() => onPageChange(page - 1)}><Icon name="left" />Previous</button>
           <span>Page {Math.min(Math.max(1, page), pageCount)} of {pageCount}</span>
-          <button type="button" disabled={loading || !!error || page >= pageCount} onClick={() => onPageChange(page + 1)}>Next</button>
+          <button type="button" disabled={loading || !!error || page >= pageCount} onClick={() => onPageChange(page + 1)}>Next<Icon name="right" /></button>
         </div>
       </div>
     </div>
