@@ -4,6 +4,7 @@ import { durationHours, getRental, getRentals, getRoute, parseRental, statuses }
 import type { Query } from './rentalsApi';
 import RentalDetails from './RentalDetails';
 import Rentals from './Rentals';
+vi.mock('../permissions/PermissionsContext', () => ({ usePermissions: () => ({ can: () => false }) }));
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
 const rental = { id: 1, status: 'Completed', user: null, car: null, startDate: null, totalPrice: 0 };
 const query: Query = { page: 1, pageSize: 10, search: '', status: '', sortBy: 'startDate', sortOrder: 'desc' };
@@ -69,7 +70,7 @@ it('renders payment retry state and loads payments only when selected', async ()
   await screen.findByText('Insufficient funds');
   expect(fetcher.mock.calls.some(call => String(call[0]).endsWith('/payments'))).toBe(false);
   fireEvent.click(screen.getByRole('button', { name: 'Payments' }));
-  await screen.findByText('25.00 AED'); expect(screen.getByText('Failed', { selector: '.status-badge' })).toBeTruthy();
+  await screen.findByText('25.00 AED', { selector: '.receipt-total strong' }); expect(screen.getByText('Failed', { selector: '.status-badge' })).toBeTruthy();
 });
 it('renders cancellation reason and missing fields safely', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ ...rental, status: 'Cancelled', cancelReason: 'Customer request' })));
@@ -82,4 +83,27 @@ it('shows list errors with a retry control', async () => {
   render(<Rentals />);
   await screen.findByText('Rentals unavailable');
   expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+});
+it('opens the detail from a plain row cell as well as the rental button', async () => {
+  const row = { ...rental, user: { fullName: 'Row customer' } };
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => String(input).includes('/rentals?')
+    ? json({ data: [row], total: 1, page: 1, pageSize: 10 }) : json(row)));
+  render(<Rentals />);
+  fireEvent.click(await screen.findByText('Row customer'));
+  await screen.findByRole('dialog', { name: 'Rental #1' });
+  fireEvent.click(screen.getByRole('button', { name: 'Close dialog' }));
+  fireEvent.click(screen.getByRole('button', { name: '#1' }));
+  await screen.findByRole('dialog', { name: 'Rental #1' });
+});
+it('separates history and technical fields from the summary and formats dates and money', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ ...rental, user: { fullName: 'Carl Jacobi', id: '27c37e6a-0000-0000-0000-000000000000', email: 'carl@example.com' },
+    freeTimeEnd: '2026-09-19T20:59:14Z', nextPaymentBaseAmount: 549, actionHistory: [{ id: 1, action: 'RentalStarted', at: '2026-09-19T20:44:14Z', by: 'system' }] })));
+  render(<RentalDetails rentalId={1} />);
+  await screen.findByRole('heading', { name: 'Carl Jacobi' });
+  expect(screen.queryByText('Action history')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'History' }));
+  await screen.findByText('Rental Started');
+  fireEvent.click(screen.getByRole('button', { name: 'Details' }));
+  expect(screen.getByText('20/09/2026, 00:59:14')).toBeTruthy();
+  expect(screen.getByText('549.00 AED')).toBeTruthy();
 });

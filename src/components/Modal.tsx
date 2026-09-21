@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { Icon } from './Icon';
 
 type ModalProps = { isOpen: boolean; title: string; children: ReactNode; onClose: () => void };
 
@@ -37,7 +38,7 @@ export function Modal({ isOpen, title, children, onClose }: ModalProps) {
       }}>
       <div className="modal-header">
         <h2 id={titleId}>{title}</h2>
-        <button type="button" onClick={onClose} aria-label="Close dialog">Close</button>
+        <button type="button" onClick={onClose} aria-label="Close dialog"><Icon name="close" />Close</button>
       </div>
       <div className="modal-body">{children}</div>
     </dialog>, document.body,

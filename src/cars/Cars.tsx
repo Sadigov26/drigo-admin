@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Table } from '../components/Table';
 import type { Column } from '../components/Table';
 import { Modal } from '../components/Modal';
@@ -9,13 +9,13 @@ import { ApiError } from '../api/client';
 import { carStatus, deleteCar, getCar, getCars, saveCar } from './carsApi';
 import type { Car, CarDetail, Page, Query } from './carsApi';
 import { CarForm } from './CarForm';
-import { CarDetails } from './CarDetails';
-import { VehicleControls } from './VehicleControls';
+import { CarDetailPanel } from './CarDetailPanel';
+import type { CarTab } from './CarDetailPanel';
+import { Icon } from '../components/Icon';
 import { getStatus } from './telematicsApi';
 import './cars.css';
 
 type Selection = { mode: 'detail' | 'edit' | 'delete'; car: Car } | { mode: 'create' };
-const CarRoute = lazy(() => import('./CarRoute'));
 const initial: Query = { page: 1, pageSize: 10, search: '', sortBy: 'createdAt', sortOrder: 'desc', status: '' };
 const message = (cause: unknown) => cause instanceof Error ? cause.message : 'Unable to complete the request.';
 export default function Cars() {
@@ -31,6 +31,8 @@ export default function Cars() {
   const [detailError, setDetailError] = useState('');
   const [detailAttempt, setDetailAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [vehicleBusy, setVehicleBusy] = useState(false);
+  const [detailTab, setDetailTab] = useState<CarTab>('summary');
   const lock = useRef(false);
   const mounted = useRef(true);
   const [actionError, setActionError] = useState('');
@@ -69,8 +71,8 @@ export default function Cars() {
       .catch(cause => { if (!controller.signal.aborted) setDetailError(message(cause)); });
     return () => controller.abort();
   }, [selectedId, selection?.mode, detailAttempt]);
-  function open(next: Selection) { setDetail(null); setActionError(''); setDetailError(''); setSelection(next); }
-  function close() { if (!lock.current) { setSelection(null); setActionError(''); } }
+  function open(next: Selection) { setDetailTab('summary'); setDetail(null); setActionError(''); setDetailError(''); setSelection(next); }
+  function close() { if (!lock.current && !vehicleBusy) { setSelection(null); setActionError(''); } }
   async function save(body: Record<string, string | number>) {
     if (!selection || lock.current || !can(selection.mode === 'create' ? 'cars.create' : 'cars.edit')) return;
     lock.current = true; setBusy(true); setActionError('');
@@ -95,13 +97,13 @@ export default function Cars() {
     { key: 'isActive', label: 'Status', render: car => <StatusBadge status={carStatus(car)} /> },
     { key: 'city', label: 'Current city', render: car => car.city === undefined ? 'Loading…' : car.city ?? 'Not provided' },
     { key: 'fuelLevel', label: 'Fuel', sortable: true, render: car => car.fuelLevel == null ? 'Not provided' : `${car.fuelLevel.toFixed(0)}%` },
-    { key: 'id', label: 'Actions', render: car => <div className="car-row-actions">{can('cars.edit') && <button onClick={() => open({ mode: 'edit', car })} aria-label={`Edit ${car.plateNumber ?? car.id}`}>Edit</button>}{can('cars.delete') && <button onClick={() => open({ mode: 'delete', car })} aria-label={`Delete ${car.plateNumber ?? car.id}`}>Delete</button>}</div> },
+    { key: 'id', label: 'Actions', render: car => <div className="car-row-actions">{can('cars.edit') && <button className="car-edit-action" onClick={() => open({ mode: 'edit', car })} aria-label={`Edit ${car.plateNumber ?? car.id}`}><Icon name="edit" />Edit</button>}{can('cars.delete') && <button className="car-delete-action" onClick={() => open({ mode: 'delete', car })} aria-label={`Delete ${car.plateNumber ?? car.id}`}><Icon name="trash" />Delete</button>}</div> },
   ];
   return <section className="cars-page">
-    <header className="cars-heading"><div><h1>Cars</h1><p>Vehicle records and fleet availability</p></div><div className="car-actions"><button disabled={loading} onClick={() => setRevision(value => value + 1)}>Refresh cars</button>{can('cars.create') && <button className="car-primary" onClick={() => open({ mode: 'create' })}>Add car</button>}</div></header>
+    <header className="cars-heading"><div><h1>Cars</h1><p>Vehicle records and fleet availability</p></div><div className="car-actions"><button disabled={loading} onClick={() => setRevision(value => value + 1)}><Icon name="refresh" />Refresh cars</button>{can('cars.create') && <button className="car-primary" onClick={() => open({ mode: 'create' })}><Icon name="plus" />Add car</button>}</div></header>
     {notice && <p role="status" className="car-notice">{notice}</p>}
     {cityError && <p role="status" className="car-note">Some city details could not be loaded. Use Refresh cars to retry.</p>}
-    <Table caption="Cars" columns={columns} data={page.data} rowKey={car => car.id} total={page.total} page={query.page} pageSize={query.pageSize} loading={loading} error={error} search={query.search} sortBy={query.sortBy} sortOrder={query.sortOrder}
+    <Table caption="Cars" onRowClick={car => open({ mode: 'detail', car })} columns={columns} data={page.data} rowKey={car => car.id} total={page.total} page={query.page} pageSize={query.pageSize} loading={loading} error={error} search={query.search} sortBy={query.sortBy} sortOrder={query.sortOrder}
       filters={<>
         <label>Status<select value={query.status} onChange={event => setQuery(previous => ({ ...previous, status: event.target.value, page: 1 }))}><option value="">All statuses</option><option>Active</option><option>Inactive</option><option>Rented</option></select></label>
         <label>Sort by<select value={query.sortBy} onChange={event => setQuery(previous => ({ ...previous, sortBy: event.target.value, page: 1 }))}><option value="createdAt">Date added</option><option value="plateNumber">Plate</option><option value="brandName">Brand</option><option value="modelName">Model</option><option value="fuelLevel">Fuel level</option></select></label>
@@ -116,7 +118,7 @@ export default function Cars() {
         : detailError ? <ErrorState message={detailError} onRetry={() => setDetailAttempt(value => value + 1)} />
         : !detail ? <LoadingState message="Loading car…" />
         : selection?.mode === 'edit' ? <CarForm car={detail} busy={busy} onSave={body => void save(body)} onCancel={close} />
-        : <><CarDetails car={detail} /><VehicleControls key={detail.id} carId={detail.id} onChanged={() => { setDetailAttempt(value => value + 1); setRevision(value => value + 1); }} /><Suspense fallback={<LoadingState message="Loading map…" />}><CarRoute key={detail.id} carId={detail.id} /></Suspense></>}
+        : <CarDetailPanel car={detail} tab={detailTab} onTab={setDetailTab} busy={vehicleBusy} onBusy={setVehicleBusy} onChanged={() => { setDetailAttempt(value => value + 1); setRevision(value => value + 1); }} />}
     </Modal>
   </section>;
 }

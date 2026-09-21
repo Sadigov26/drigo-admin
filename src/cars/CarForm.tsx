@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { ErrorState, LoadingState } from '../components/States';
 import { getBrands, getLookups } from './carsApi';
 import type { CarDetail, Lookup } from './carsApi';
+import { Icon } from '../components/Icon';
 
 type Props = { car: CarDetail | null; busy: boolean; onSave: (body: Record<string, string | number>) => void; onCancel: () => void };
 const numbers = [
@@ -96,6 +97,6 @@ export function CarForm({ car, busy, onSave, onCancel }: Props) {
     </div>
     {!car && <p className="car-note">Creates one active car. Leave the chassis number blank to generate it automatically.</p>}
     {error && <p role="alert" className="error-message">{error}</p>}
-    <div className="car-actions"><button type="button" onClick={onCancel}>Cancel</button><button className="car-primary" type="submit" disabled={!dependent}>{busy ? 'Saving…' : 'Save car'}</button></div>
+    <div className="car-actions"><button type="button" onClick={onCancel}><Icon name="close" />Cancel</button><button className="car-primary" type="submit" disabled={!dependent}><Icon name="check" />{busy ? 'Saving…' : 'Save car'}</button></div>
   </fieldset></form>;
 }

@@ -1,7 +1,7 @@
 .dashboard { width: 100%; min-width: 0; }
 .dashboard-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
 .dashboard-heading button { flex-shrink: 0; background: var(--accent); color: white; border-color: var(--accent); }
-.dashboard-heading button:hover:not(:disabled) { background: #294a3e; }
+.dashboard-heading button:hover:not(:disabled) { background: var(--accent-hover); }
 .dashboard-heading button:disabled { background: #e9eeea; color: #59645e; border-color: #cbd7ce; }
 .dashboard-updated, .dashboard-note, .trend-period { color: #626a75; font-size: 12px; margin: 0 0 12px; }
 .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0; }
@@ -17,10 +17,12 @@
 .trend-panel { background: white; border: 1px solid #e1e4e8; border-radius: 5px; padding: 18px 14px 14px; min-width: 0; }
 .trend-panel h3 { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
 .trend-chart { min-width: 0; }
+.trend-chart :is(.recharts-wrapper, .recharts-surface):focus:not(:focus-visible) { outline: none; }
+.trend-chart :is(.recharts-wrapper, .recharts-surface):focus-visible { outline: 2px solid #426b9c; outline-offset: -2px; }
 .trend-data summary { font-size: 12px; color: #315f8a; cursor: pointer; padding: 8px 0 0; }
 .trend-data table { margin-top: 12px; width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
 .trend-data th, .trend-data td { text-align: left; padding: 7px; border-bottom: 1px solid #e7e9ec; }
-.trend-data tbody th { font-weight: 400; }
+.trend-data tbody th { font-weight: 400; background: transparent; color: inherit; }
 .dashboard-note { margin-top: 22px; }
 .operations-section { margin-top: 32px; min-width: 0; padding-top: 24px; border-top: 1px solid #dfe5dc; }
 .operations-section h3 { font-size: 14px; font-weight: 600; margin: 20px 0 12px; }

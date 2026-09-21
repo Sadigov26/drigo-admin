@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Icon } from '../components/Icon';
 import { EmptyState, ErrorState, LoadingState } from '../components/States';
 import { getKpis, getTrends } from './dashboardApi';
 import { KpiCards } from './KpiCards';
@@ -21,6 +22,7 @@ export default function Dashboard() {
     <div className="dashboard-heading">
       <div><h1>Dashboard</h1><p className="page-description">Rental operations and revenue</p></div>
       <button type="button" onClick={() => setRefreshKey(value => value + 1)} disabled={loading}>
+        <Icon name="refresh" />
         {loading ? 'Refreshing…' : 'Refresh dashboard'}
       </button>
     </div>

@@ -6,6 +6,7 @@ import { usePermissions } from '../permissions/PermissionsContext';
 import { useVehicleResource } from '../cars/useVehicleResource';
 import { createBrand, createColor, createModel, deleteBrand, getBrands, getColors, getModels, validHex } from './catalogApi';
 import type { Brand, Model } from './catalogApi';
+import { Icon } from '../components/Icon';
 import './catalog.css';
 
 type Action = { kind: 'brand' } | { kind: 'model' | 'color' | 'delete'; brand: Brand };
@@ -21,9 +22,9 @@ function BrandContents({ brand, revision, onAdd, onAddColor }: { brand: Brand; r
   const colorPages = Math.max(1, Math.ceil(filteredColors.length / 6));
   const currentColorPage = Math.min(colorPage, colorPages);
   return <section className="catalog-details" aria-label={`${brand.name} details`}>
-    <header><h2>{brand.name} models</h2>{onAdd && <button onClick={onAdd}>Add model</button>}</header>
+    <header><h2>{brand.name} models</h2>{onAdd && <button className="btn-soft-primary" onClick={onAdd}><Icon name="plus" />Add model</button>}</header>
     {models.loading ? <LoadingState /> : models.error ? <ErrorState message={models.error} onRetry={models.refresh} /> : models.data?.length ? <ul>{models.data.map(model => <li key={model.id}>{model.name}</li>)}</ul> : <EmptyState message="No models yet." />}
-    <header><h3>Colors</h3>{onAddColor && <button onClick={onAddColor}>Add color</button>}</header>
+    <header><h3>Colors</h3>{onAddColor && <button className="btn-soft-primary" onClick={onAddColor}><Icon name="plus" />Add color</button>}</header>
     <label className="catalog-color-search">Search colors<input type="search" value={colorSearch} onChange={event => { setColorSearch(event.target.value); setColorPage(1); }} /></label>
     {colors.loading ? <LoadingState /> : colors.error ? <ErrorState message={colors.error} onRetry={colors.refresh} /> : filteredColors.length ? <ul className="catalog-colors">{filteredColors.slice((currentColorPage - 1) * 6, currentColorPage * 6).map(color => <li key={color.id}><span className="color-swatch" style={{ backgroundColor: color.hexCode }} aria-hidden="true" />{color.name} <small>{color.hexCode}</small></li>)}</ul> : <EmptyState message={colorSearch ? 'No matching colors.' : 'No colors for this brand.'} />}
     {!colors.loading && !colors.error && <div className="table-pagination"><span>{filteredColors.length} colors</span><div><button disabled={currentColorPage <= 1} onClick={() => setColorPage(currentColorPage - 1)}>Previous colors</button><span>{currentColorPage} / {colorPages}</span><button disabled={currentColorPage >= colorPages} onClick={() => setColorPage(currentColorPage + 1)}>Next colors</button></div></div>}
@@ -83,12 +84,12 @@ export default function Catalog() {
     finally { lock.current = false; if (alive.current) setBusy(false); }
   }
   return <section className="catalog-page">
-    <header><div><h1>Brands & models</h1><p>Vehicle catalog</p></div><div className="catalog-actions"><button disabled={brands.loading} onClick={brands.refresh}>Refresh brands</button>{can('cars.create') && <button onClick={() => open({ kind: 'brand' })}>Add brand</button>}</div></header>
+    <header><div><h1>Brands & models</h1><p>Vehicle catalog</p></div><div className="catalog-actions"><button disabled={brands.loading} onClick={brands.refresh}><Icon name="refresh" />Refresh brands</button>{can('cars.create') && <button className="btn-primary" onClick={() => open({ kind: 'brand' })}><Icon name="plus" />Add brand</button>}</div></header>
     {notice && <p role="status">{notice}</p>}
-    <Table caption="Brands" columns={[
+    <Table caption="Brands" onRowClick={brand => setSelected(brand)} columns={[
       { key: 'name', label: 'Brand', sortable: true, render: brand => <button className="catalog-link" aria-expanded={selected?.id === brand.id} onClick={() => setSelected(selected?.id === brand.id ? null : brand)}>{brand.name}</button> },
       { key: 'id', label: 'Models', render: brand => counts[brand.id] === undefined ? 'Loading…' : counts[brand.id] === null ? 'Unavailable' : counts[brand.id] },
-      { key: 'actions', label: 'Actions', render: brand => can('cars.delete') ? <button onClick={() => open({ kind: 'delete', brand })} aria-label={`Delete ${brand.name}`}>Delete</button> : '—' },
+      { key: 'actions', label: 'Actions', render: brand => can('cars.delete') ? <button className="btn-soft-danger" onClick={() => open({ kind: 'delete', brand })} aria-label={`Delete ${brand.name}`}><Icon name="trash" />Delete</button> : '—' },
     ]} data={visible} rowKey={brand => brand.id} total={filtered.length} page={page} pageSize={10} loading={brands.loading} error={brands.error || null} search={search} sortBy="name" sortOrder={order} onSearch={setSearch} onSort={(_, next) => setOrder(next)} onPageChange={setPage} onRetry={brands.refresh}
       filters={<label>Sort by<select value={order} onChange={event => { setOrder(event.target.value as 'asc' | 'desc'); setPage(1); }}><option value="asc">Brand name · A–Z</option><option value="desc">Brand name · Z–A</option></select></label>} />
     <Modal isOpen={action != null || selected != null} title={action?.kind === 'delete' ? 'Delete brand' : action?.kind === 'model' ? `Add model · ${action.brand.name}` : action?.kind === 'color' ? `Add color · ${action.brand.name}` : action?.kind === 'brand' ? 'Add brand' : `${selected?.name ?? ''} · Models & colors`} onClose={close}>
@@ -96,7 +97,7 @@ export default function Catalog() {
         {action?.kind === 'delete' ? <p>Delete <strong>{action.brand.name}</strong>? This cannot be undone.</p> : <label>Name<input autoFocus required maxLength={100} value={name} disabled={busy} onChange={event => setName(event.target.value)} /></label>}
         {action?.kind === 'color' && <div className="color-entry"><label>Hex code<input required maxLength={7} placeholder="#1E3A8A" value={hexCode} disabled={busy} onChange={event => setHexCode(event.target.value)} /></label>{validHex(hexCode.trim()) && <span className="color-swatch" role="img" aria-label={`Color preview ${hexCode.trim()}`} style={{ backgroundColor: hexCode.trim() }} />}</div>}
         {error && <p role="alert" className="error-message">{error}</p>}
-        <div className="catalog-actions"><button type="button" disabled={busy} onClick={close}>Cancel</button><button disabled={busy}>{busy ? 'Saving…' : action?.kind === 'delete' ? 'Confirm delete' : 'Save'}</button></div>
+        <div className="catalog-actions"><button type="button" disabled={busy} onClick={close}><Icon name="close" />Cancel</button><button className={action?.kind === 'delete' ? 'btn-danger' : 'btn-soft-primary'} disabled={busy}><Icon name={action?.kind === 'delete' ? 'trash' : 'check'} />{busy ? 'Saving…' : action?.kind === 'delete' ? 'Confirm delete' : 'Save'}</button></div>
       </form>}
     </Modal>
   </section>;

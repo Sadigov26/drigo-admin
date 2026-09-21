@@ -4,6 +4,7 @@ import { getPayments, getRental } from './rentalsApi';
 import { useVehicleResource } from '../cars/useVehicleResource';
 import { EmptyState, ErrorState, LoadingState } from '../components/States';
 import { StatusBadge } from '../components/StatusBadge';
+import { RentalActions } from './RentalActions';
 const RentalRoute = lazy(() => import('./RentalRoute'));
 export const text = (value: unknown) => typeof value === 'string' && value.trim() ? value : '—';
 export function date(value: unknown) {
@@ -15,18 +16,64 @@ export function money(value: unknown, currency: unknown = 'AED') {
 const label = (key: string) => key.replace(/([A-Z])/g, ' $1').replace(/^./, letter => letter.toUpperCase());
 // Decorative color-name indicators, not a manufacturer paint-code lookup.
 const colorIndicators: Record<string, string> = { silver: '#c0c0c0', white: '#ffffff', black: '#222222', red: '#b91c1c', blue: '#315d88', grey: '#808080', gray: '#808080', green: '#365e50', yellow: '#e8bf48' };
-function valueView(value: unknown, key = ''): ReactNode {
+function valueView(value: unknown, key = '', currency: unknown = 'AED'): ReactNode {
   if (value == null || value === '') return '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  if (Array.isArray(value)) return value.length ? <ul className="rental-records">{value.map((item, index) => <li key={index}>{valueView(item)}</li>)}</ul> : 'None';
-  if (typeof value === 'object') return <dl className="rental-fields">{Object.entries(value).map(([name, item]) => <div key={name}><dt>{label(name)}</dt><dd>{valueView(item, name)}</dd></div>)}</dl>;
+  if (Array.isArray(value)) return value.length ? <ul className="rental-records">{value.map((item, index) => <li key={index}>{valueView(item, '', currency)}</li>)}</ul> : 'None';
+  if (typeof value === 'object') return <dl className="rental-fields">{Object.entries(value).map(([name, item]) => <div key={name}><dt>{label(name)}</dt><dd>{valueView(item, name, 'currency' in value ? value.currency : currency)}</dd></div>)}</dl>;
   if (key === 'id' && typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value)) return <details className="rental-identifier"><summary>{value.slice(0, 8)}…</summary><span>{value}</span></details>;
   if (key === 'color' && typeof value === 'string') return <span className="rental-color">{colorIndicators[value.toLowerCase()] && <span aria-hidden="true" style={{ backgroundColor: colorIndicators[value.toLowerCase()] }} />}{value}</span>;
-  if (typeof value === 'string' && (/Date$|At$|Until$|Due$/.test(key) || ['at', 'from', 'to', 'periodStart', 'periodEnd'].includes(key))) return date(value);
+  if (typeof value === 'string' && (/Date$|At$|Until$|Due$/.test(key) || ['at', 'from', 'to', 'periodStart', 'periodEnd', 'freeTimeEnd'].includes(key))) return date(value);
+  if (typeof value === 'number' && /price|amount|fee|totalPaid|totalDebt|bonusBalance|deductible|nextPaymentTotal|bundledDebts/i.test(key)) return money(value, currency);
+  if (typeof value === 'number' && /distance|includedKm/i.test(key)) return `${value.toLocaleString('en-GB', { maximumFractionDigits: 2 })} km`;
   return typeof value === 'number' ? value.toLocaleString('en-GB', { maximumFractionDigits: 6, useGrouping: !/id$|year$/i.test(key) }) : String(value);
 }
 function Section({ title, value }: { title: string; value: unknown }) {
   return <section className="rental-section"><h3>{title}</h3>{valueView(value)}</section>;
+}
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+function IdentityCard({ title, value, primary, secondary }: { title: string; value: unknown; primary: string; secondary: string[] }) {
+  const fields = record(value);
+  const rest = Object.fromEntries(Object.entries(fields).filter(([key]) => key !== primary && key !== 'id' && !secondary.includes(key)));
+  return <section className="rental-identity"><span className="rental-eyebrow">{title}</span><h3>{text(fields[primary])}</h3>
+    {secondary.length > 0 && <p className="identity-subtitle">{secondary.map(key => fields[key]).filter(value => value != null && value !== '').join(' · ') || '—'}</p>}
+    {valueView(rest)}
+    {fields.id != null && <details className="identity-reference"><summary>{title} reference</summary>{valueView(fields.id, 'id')}</details>}
+  </section>;
+}
+function Timeline({ value }: { value: unknown }) {
+  const rows = Array.isArray(value) ? value : [];
+  return <section className="rental-section"><h3>Action history</h3>{rows.length ? <ol className="rental-timeline">{rows.map((value, index) => {
+    const item = record(value);
+    const extra = Object.fromEntries(Object.entries(item).filter(([key]) => !['action', 'at', 'by', 'note'].includes(key)));
+    return <li key={index}><div><strong>{label(text(item.action))}</strong><time>{date(item.at)}</time></div><p>{text(item.by)}{item.note ? ` · ${text(item.note)}` : ''}</p><details><summary>Event reference</summary>{valueView(extra)}</details></li>;
+  })}</ol> : <p className="rental-empty">No activity recorded.</p>}</section>;
+}
+function RentalHistory({ value }: { value: unknown }) {
+  const rows = Array.isArray(value) ? value : [];
+  return <section className="rental-section"><h3>Customer rental history</h3>{rows.length ? <div className="rental-history-scroll"><table><thead><tr><th>Rental</th><th>Status</th><th>Started · Dubai</th><th>Ended · Dubai</th><th>Amount</th></tr></thead><tbody>{rows.map((value, index) => {
+    const item = record(value);
+    return <tr key={index}><td>#{String(item.id ?? '—')}</td><td><StatusBadge status={text(item.status)} /></td><td>{date(item.startDate)}</td><td>{date(item.endDate)}</td><td>{money(item.totalPrice)}</td></tr>;
+  })}</tbody></table></div> : <p className="rental-empty">No previous rentals.</p>}</section>;
+}
+const detailGroups = [
+  { title: 'Dates & rental period', matches: /Date$|At$|Until$|Due$|freeTimeEnd|currentPeriod|isPackageExpired|isMonthlySubscription/ },
+  { title: 'Distance & allowances', matches: /[Dd]istance/ },
+  { title: 'Billing & bonuses', matches: /[Pp]rice|[Pp]aid|[Pp]ayment|[Dd]ebt|[Dd]iscount|[Bb]onus|useBonus/ },
+  { title: 'Location & vehicle segments', matches: /route|[Ll]ocation|carSegments/ },
+  { title: 'Insurance & booking', matches: /insurance|booking/ },
+];
+function TechnicalDetails({ value }: { value: Record<string, unknown> }) {
+  const remaining = { ...value };
+  const groups = detailGroups.map(group => {
+    const fields = Object.fromEntries(Object.entries(remaining).filter(([key]) => group.matches.test(key)));
+    Object.keys(fields).forEach(key => delete remaining[key]);
+    return { title: group.title, fields };
+  });
+  groups.push({ title: 'References & other details', fields: remaining });
+  return <div className="rental-detail-groups">{groups.filter(group => Object.keys(group.fields).length).map(group => <details key={group.title} className="rental-detail-group"><summary>{group.title}</summary>{valueView(group.fields)}</details>)}</div>;
 }
 function Photos({ title, value }: { title: string; value: unknown }) {
   const urls = Array.isArray(value) ? value.filter((item): item is string => {
@@ -48,24 +95,31 @@ function Payments({ rentalId }: { rentalId: number }) {
     </article>)}</div> : <EmptyState message="No payments recorded." />}
   </section>;
 }
-export default function RentalDetails({ rentalId }: { rentalId: number }) {
+export default function RentalDetails({ rentalId, canEdit = false, onChanged, onBusy }: { rentalId: number; canEdit?: boolean; onChanged?: () => void; onBusy?: (busy: boolean) => void }) {
   const load = useCallback((signal: AbortSignal) => getRental(rentalId, signal), [rentalId]);
   const detail = useVehicleResource(load);
   const [tab, setTab] = useState('summary');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
   const row = detail.data;
-  const grouped = ['user', 'car', 'tariff', 'debts', 'actionHistory', 'startPhotoUrls', 'endPhotoUrls', ...(row?.status === 'PaymentPending' ? ['paymentRetryState'] : []), ...(row?.status === 'Cancelled' ? ['cancelReason'] : [])];
+  const grouped = ['user', 'car', 'tariff', 'debts', 'actionHistory', 'startPhotoUrls', 'endPhotoUrls', 'userRentalHistory', ...(row?.status === 'PaymentPending' ? ['paymentRetryState'] : []), ...(row?.status === 'Cancelled' ? ['cancelReason'] : [])];
   return <div className="rental-detail">
-    <nav className="rental-tabs" aria-label="Rental detail views">{['summary', 'payments', 'route'].map(value => <button key={value} aria-pressed={tab === value} onClick={() => setTab(value)}>{label(value)}</button>)}</nav>
+    {message && <p role="status">{message}</p>}
+    <nav className="rental-tabs" aria-label="Rental detail views">{['summary', 'payments', 'route', 'history', 'photos', 'details'].map(value => <button key={value} disabled={busy} aria-pressed={tab === value} onClick={() => setTab(value)}>{label(value)}</button>)}</nav>
     {tab === 'payments' ? <Payments rentalId={rentalId} /> : tab === 'route' ? <Suspense fallback={<LoadingState message="Loading map…" />}><RentalRoute rentalId={rentalId} /></Suspense> : <>
-      <button disabled={detail.loading} onClick={detail.refresh}>Refresh details</button>
+      <button disabled={busy || detail.loading} onClick={detail.refresh}>Refresh details</button>
       {detail.loading ? <LoadingState /> : detail.error ? <ErrorState message={detail.error} onRetry={detail.refresh} /> : row && <>
+        {tab === 'summary' && <>
         <div className="rental-summary"><div><span className="summary-label">Rental status</span><StatusBadge status={row.status} /></div><div className="summary-amount"><span className="summary-label">Rental amount</span><strong>{money(row.totalPrice)}</strong></div><div className="summary-date"><span className="summary-label">Started · Dubai</span><span>{date(row.startDate)}</span></div></div>
-        {row.status === 'PaymentPending' && <Section title="Payment retry state" value={row.paymentRetryState} />}
+        {row.status === 'PaymentPending' && <><Section title="Payment retry state" value={row.paymentRetryState} /><p className="rental-note">Review the failed transaction in Payments and the debts below. Customer payment retry will be available with the Customers module.</p></>}
         {row.status === 'Cancelled' && <Section title="Cancellation reason" value={row.cancelReason} />}
-        <Section title="Customer" value={row.user} /><Section title="Car" value={row.car} /><Section title="Tariff" value={row.tariff} />
-        <Section title="Debts" value={row.debts} /><Section title="Action history" value={row.actionHistory} />
-        <Photos title="Start photos" value={row.startPhotoUrls} /><Photos title="End photos" value={row.endPhotoUrls} />
-        <details className="rental-section"><summary>Additional rental details</summary>{valueView(Object.fromEntries(Object.entries(row).filter(([key]) => !grouped.includes(key))))}</details>
+        {canEdit && <RentalActions rental={row} onBusy={value => { setBusy(value); onBusy?.(value); }} onChanged={notice => { setMessage(notice); detail.refresh(); onChanged?.(); }} />}
+        <div className="rental-identity-grid"><IdentityCard title="Customer" value={row.user} primary="fullName" secondary={['phoneNumber', 'email']} /><IdentityCard title="Car" value={row.car} primary="plateNumber" secondary={['brand', 'model']} /></div>
+        <div className="rental-overview-grid"><IdentityCard title="Tariff" value={row.tariff} primary="packageName" secondary={[]} /><section className="rental-section rental-billing"><h3>Rental balance</h3><dl className="receipt-lines">{['totalPaid', 'totalDebt', 'nextPaymentTotal'].filter(key => key !== 'totalPaid' || row[key] != null).map(key => <div key={key}><dt>{label(key)}</dt><dd>{money(row[key])}</dd></div>)}</dl><details><summary>Debt records</summary>{Array.isArray(row.debts) && row.debts.length === 0 ? <p className="rental-empty">No debts recorded.</p> : valueView(row.debts)}</details></section></div>
+        </>}
+        {tab === 'history' && <><Timeline value={row.actionHistory} /><RentalHistory value={row.userRentalHistory} /></>}
+        {tab === 'photos' && <div className="rental-photo-groups"><Photos title="Start photos" value={row.startPhotoUrls} /><Photos title="End photos" value={row.endPhotoUrls} /></div>}
+        {tab === 'details' && <TechnicalDetails value={Object.fromEntries(Object.entries(row).filter(([key]) => !grouped.includes(key)))} />}
       </>}
     </>}
   </div>;
