@@ -4,6 +4,7 @@ import { getPayments, getRental } from './rentalsApi';
 import { useVehicleResource } from '../cars/useVehicleResource';
 import { EmptyState, ErrorState, LoadingState } from '../components/States';
 import { StatusBadge } from '../components/StatusBadge';
+import { Icon, type IconName } from '../components/Icon';
 import { RentalActions } from './RentalActions';
 const RentalRoute = lazy(() => import('./RentalRoute'));
 export const text = (value: unknown) => typeof value === 'string' && value.trim() ? value : '—';
@@ -105,7 +106,7 @@ export default function RentalDetails({ rentalId, canEdit = false, onChanged, on
   const grouped = ['user', 'car', 'tariff', 'debts', 'actionHistory', 'startPhotoUrls', 'endPhotoUrls', 'userRentalHistory', ...(row?.status === 'PaymentPending' ? ['paymentRetryState'] : []), ...(row?.status === 'Cancelled' ? ['cancelReason'] : [])];
   return <div className="rental-detail">
     {message && <p role="status">{message}</p>}
-    <nav className="rental-tabs" aria-label="Rental detail views">{['summary', 'payments', 'route', 'history', 'photos', 'details'].map(value => <button key={value} disabled={busy} aria-pressed={tab === value} onClick={() => setTab(value)}>{label(value)}</button>)}</nav>
+    <nav className="rental-tabs" aria-label="Rental detail views">{['summary', 'payments', 'route', 'history', 'photos', 'details'].map(value => <button key={value} disabled={busy} aria-pressed={tab === value} onClick={() => setTab(value)}><Icon name={({ summary: 'info', payments: 'receipt', route: 'map', history: 'history', photos: 'image', details: 'settings' } as Record<string, IconName>)[value]} />{label(value)}</button>)}</nav>
     {tab === 'payments' ? <Payments rentalId={rentalId} /> : tab === 'route' ? <Suspense fallback={<LoadingState message="Loading map…" />}><RentalRoute rentalId={rentalId} /></Suspense> : <>
       <button disabled={busy || detail.loading} onClick={detail.refresh}>Refresh details</button>
       {detail.loading ? <LoadingState /> : detail.error ? <ErrorState message={detail.error} onRetry={detail.refresh} /> : row && <>

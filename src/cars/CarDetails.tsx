@@ -7,11 +7,13 @@ const numeric = (value: unknown, unit = '', digits = 0) => typeof value === 'num
 const text = (value: unknown) => typeof value === 'string' && value.trim() ? value : '—';
 
 function label(key: string) { return key.replace(/([A-Z])/g, ' $1').replace(/^./, value => value.toUpperCase()); }
-function valueView(value: unknown): ReactNode {
+function valueView(value: unknown, field = ''): ReactNode {
   if (value == null || value === '') return '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (Array.isArray(value)) return value.length ? <ul>{value.map((item, index) => <li key={index}>{valueView(item)}</li>)}</ul> : 'None';
-  if (typeof value === 'object') return <dl className="car-nested">{Object.entries(value).map(([key, item]) => <div key={key}><dt>{label(key)}</dt><dd>{valueView(item)}</dd></div>)}</dl>;
+  if (typeof value === 'object') return <dl className="car-nested">{Object.entries(value).map(([key, item]) => <div key={key}><dt>{label(key)}</dt><dd>{valueView(item, key)}</dd></div>)}</dl>;
+  if (typeof value === 'string' && /At$|Date$/.test(field) && Number.isFinite(Date.parse(value))) return new Date(value).toLocaleString('en-GB', { timeZone: 'Asia/Dubai' });
+  if (typeof value === 'number' && /fuelPercentage|fuelLevel/.test(field)) return numeric(value, '%');
   return typeof value === 'number' ? new Intl.NumberFormat('en-GB', { maximumFractionDigits: 6, useGrouping: false }).format(value) : String(value);
 }
 export function CarDetails({ car, technical = false }: { car: CarDetail; technical?: boolean }) {
@@ -24,7 +26,16 @@ export function CarDetails({ car, technical = false }: { car: CarDetail; technic
     ['Tariff', car.tariffPackageId == null ? '—' : `#${car.tariffPackageId}`], ['Active rental', car.activeRentalId == null ? '—' : `#${car.activeRentalId}`],
   ];
   const primary = ['plateNumber', 'brandName', 'modelName', 'colorName', 'manufactureYear', 'fuelTypeName', 'maxSpeed', 'isActive', 'activeRentalId', 'location', 'fuelLevel', 'tariffPackageId', 'price', 'carFeatures'];
-  if (technical) return <section className="car-info-card"><h3>Technical details</h3><dl className="car-details">{Object.entries(car).filter(([key]) => !primary.includes(key)).map(([key, value]) => <div key={key}><dt>{label(key)}</dt><dd>{valueView(value)}</dd></div>)}</dl></section>;
+  if (technical) {
+    const remaining = Object.entries(car).filter(([key]) => !primary.includes(key));
+    const groups: [string, RegExp][] = [['Vehicle specifications', /model$|year$|body|engine|fuel|transmission|seats/i], ['Equipment & services', /carplay|keyless|parking|insurance|freeFuel/i], ['Media & links', /url$/i], ['References & other details', /./]];
+    const used = new Set<string>();
+    return <div className="car-technical-groups">{groups.map(([title, pattern]) => {
+      const entries = remaining.filter(([key]) => !used.has(key) && pattern.test(key));
+      entries.forEach(([key]) => used.add(key));
+      return entries.length ? <section className="car-info-card" key={title}><h3>{title}</h3><dl className="car-details">{entries.map(([key, value]) => <div key={key}><dt>{label(key)}{/At$|Date$/.test(key) ? ' · Dubai' : ''}</dt><dd>{valueView(value, key)}</dd></div>)}</dl></section> : null;
+    })}</div>;
+  }
   return <>
     <header className="car-profile"><div><span className="car-profile-label">Vehicle</span><h3>{text(car.plateNumber)}</h3><p>{text(car.brandName)} · {text(car.modelName)}</p></div><StatusBadge status={status} /><div className="car-profile-price"><span className="car-profile-label">Tariff price</span><strong>{numeric(car.price, ' AED', 2)}</strong></div></header>
     <section className="car-info-card"><h3>Vehicle information</h3><dl className="car-details car-primary-details">{fields.map(([name, value]) => <div key={name}><dt>{name}</dt><dd>{value}</dd></div>)}</dl></section>
