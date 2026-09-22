@@ -3,7 +3,7 @@ const tones: Record<string, string> = {
   Succeeded: 'success', Approved: 'success', Granted: 'success',
   Pending: 'warning', Checking: 'warning', PaymentPending: 'warning', Review: 'warning',
   UnderReview: 'warning', Busy: 'warning',
-  Cancelled: 'danger', Offline: 'danger', Blocked: 'danger', Failed: 'danger', Accident: 'danger',
+  Cancelled: 'danger', Offline: 'danger', Blocked: 'danger', Failed: 'danger', Accident: 'danger', Rejected: 'danger',
   Completed: 'info', Started: 'info', DriverAssigned: 'info', PickingUp: 'info',
   InDelivery: 'info', Delivered: 'info', Confirmed: 'info', Billed: 'info',
 };
