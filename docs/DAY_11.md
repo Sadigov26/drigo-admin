@@ -19,7 +19,7 @@ Based on Handbook sections 5.6, 8.7 and 10. Branch: `feature/day-11`, from revie
 - `PATCH /users/:id/block` sends `{blocked: true|false, reason}` explicitly, never relies on toggle semantics.
 - Customer detail does not expose blockReason; the UI does not invent it.
 - Every action re-reads the customer before mutation. This catches stale dialogs but is not an atomic server-side concurrency guarantee.
-- Document/photo links allow only HTTP(S), use no-referrer and do not automatically load external images.
+- Profile and document photos render inline from backend HTTP(S) URLs with no-referrer, lazy loading, missing/error states and retry. Clicking a preview opens the original full size. The mock returns placeholder photos, not genuine identity documents; no replacement document imagery is fabricated.
 - Day 12 payment/debt/bonus/devices/login-history/revenue/reservation sub-tabs are intentionally deferred.
 
 ## Review walkthrough
