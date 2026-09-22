@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Customers from './Customers';
-import CustomerDetails from './CustomerDetails';
+import CustomerDetails, { CustomerImage } from './CustomerDetails';
+import { Modal } from '../components/Modal';
 import { allowedActions, customerStatus, getCustomer, getCustomers, parseCustomer, performCustomerAction } from './customersApi';
 
 const id = '11111111-1111-4111-8111-111111111111';
@@ -15,6 +16,39 @@ beforeEach(() => {
   HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
+it('renders backend photo previews without cropping and handles image failures', () => {
+  render(<CustomerImage value="https://example.com/passport.jpg" title="Passport front" />);
+  const image = screen.getByRole('img', { name: 'Passport front' });
+  expect(image.getAttribute('src')).toBe('https://example.com/passport.jpg');
+  expect(image.getAttribute('referrerpolicy')).toBe('no-referrer');
+  fireEvent.error(image);
+  expect(screen.queryByRole('img')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Retry image' }));
+  fireEvent.load(screen.getByRole('img'));
+  expect(screen.queryByText('Loading image…')).toBeNull();
+});
+it('enlarges a document in a dialog without navigating away and closes with Escape', () => {
+  const closeParent = vi.fn();
+  render(<Modal isOpen title="Customer details" onClose={closeParent}><CustomerImage value="https://example.com/passport.jpg" title="Passport front" /></Modal>);
+  const trigger = screen.getByRole('button', { name: 'Enlarge passport front' });
+  trigger.focus();
+  fireEvent.click(trigger);
+  expect(screen.getByRole('dialog', { name: 'Passport front' })).toBeTruthy();
+  expect(screen.getByRole('img', { name: 'Passport front enlarged' })).toBeTruthy();
+  expect(screen.queryByRole('link')).toBeNull();
+  fireEvent(screen.getByRole('dialog', { name: 'Passport front' }), new Event('cancel', { bubbles: false, cancelable: true }));
+  expect(screen.queryByRole('dialog', { name: 'Passport front' })).toBeNull();
+  expect(closeParent).not.toHaveBeenCalled();
+  expect(document.activeElement).toBe(trigger);
+});
+it('does not request missing or unsafe image URLs', () => {
+  const { rerender } = render(<CustomerImage value={null} title="Profile photo" />);
+  expect(screen.getByText('No image uploaded')).toBeTruthy();
+  rerender(<CustomerImage value="javascript:alert(1)" title="Profile photo" />);
+  expect(screen.getByText('Unavailable')).toBeTruthy();
+  expect(screen.queryByRole('img')).toBeNull();
+});
 
 it('uses approved filter, encoded search and cookie requests', async () => {
   const fetcher = vi.fn().mockResolvedValue(json({ data: [base], total: 1, page: 1, pageSize: 10 }));

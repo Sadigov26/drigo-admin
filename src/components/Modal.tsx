@@ -27,7 +27,7 @@ export function Modal({ isOpen, title, children, onClose }: ModalProps) {
   if (!isOpen) return null;
   return createPortal(
     <dialog ref={dialog} className="modal" role="dialog" aria-modal="true" aria-labelledby={titleId}
-      onCancel={event => { event.preventDefault(); onClose(); }}
+      onCancel={event => { event.preventDefault(); event.stopPropagation(); onClose(); }}
       onPointerDown={event => { pressedBackdrop.current = event.target === event.currentTarget; }}
       onClick={event => {
         const bounds = event.currentTarget.getBoundingClientRect();
