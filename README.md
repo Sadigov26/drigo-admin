@@ -1,69 +1,79 @@
 # DRIGO Admin
 
-DRIGO internship frontend built with React, TypeScript and Vite.
+Internship frontend built with React, TypeScript and Vite, connected to the separate DRIGO mock backend. Business data and state transitions come from that API.
 
-## Current scope
+## Implemented through Day 12
 
-- Two-step login and OTP verification using the provided backend.
-- Cookie session restoration, protected routes and logout.
-- A restrained responsive layout with Overview and a protected 404 page.
-- Shared API client with cookies, request timeouts and HTTP error handling.
-- Live backend health check and the signed-in admin's account details.
-- Permissions-based navigation and direct-route access checks.
-- Shared table, modal, status badges and loading/empty/error states.
-- A searchable permission list using the signed-in account's real grants.
-- Dashboard KPI cards and two live trend charts, with manual refresh and independent retries.
-- Fleet summary with city counts, online users, and separate recent rental/reservation/support lists.
+- Two-step authentication, cookie sessions, route guards and logout.
+- Permissions-based navigation, shared tables, dialogs, icons and request states.
+- Overview: health check and signed-in account permissions.
+- Dashboard: KPIs, trends, fleet summary, online users and recent activity.
+- Cars: list/filter/detail, create/edit/delete, tracking, GPS routes, vehicle commands and problematic cars.
+- Brands/models and per-brand colors using supported backend endpoints.
+- Rentals: list/filter/detail, payments, route, end rental, switch car, status changes, compensation distance and distance packages.
+- Customers: list/filter/detail, inline documents and image enlargement, approve/reject, block/unblock, delete/restore and UUID lookup.
+- Customer tabs: payments, debt, bonus, devices, login history, revenue and reservations. Pay all requires confirmation and refreshes server data.
 
-Cars includes list/detail, create/edit/delete, tracking with GPS history, vehicle controls and a problematic-cars table. Dashboard code covers Section 8.2. See the daily notes for verification and outstanding review steps.
+Other navigation entries do not mean every backend module is implemented. Daily notes record exact scope and limitations; PR review is a separate completion step.
 
 ## Local setup
 
-Use Node.js 22.12+; development was verified with Node 24.
+1. Start the separate backend with `npm start` in `../drigo.dev.node`.
+2. Copy `.env.example` to `.env`: `VITE_API_BASE_URL=http://localhost:4000`.
+3. Run `npm install`, then `npm run dev` here. Development uses Node 24.
+4. Open [localhost:5173](http://localhost:5173).
 
-1. Start the separate backend: run `npm start` in `../drigo.dev.node`.
-2. Copy `.env.example` to `.env` if it does not exist.
-3. Run `npm install`, then `npm run dev` here.
-4. Open http://localhost:5173.
+Provided training login: `admin` / `admin123`, OTP `123456`. These are mock credentials, not production secrets. Other accounts are documented by the backend. Use localhost consistently for browser sessions, not a mixture with 127.0.0.1.
 
-The mock login is `admin` / `admin123`, followed by OTP `123456`. These are local training credentials. Other provided accounts are `operator` and `fleet`; check the backend README for their setup.
-
-The frontend uses `VITE_API_BASE_URL=http://localhost:4000`. VITE-prefixed variables are visible to the browser: never put secrets there. Keep both frontend and backend on localhost, not a mixture of localhost and 127.0.0.1.
+VITE-prefixed values are public browser configuration: never put secrets there. `.env`, `dist/` and `node_modules/` are ignored by Git.
 
 ## Checks
 
-- `npm test`: auth, API errors, permissions, shared components and dashboard tests.
-- `npm run typecheck`: strict TypeScript checks.
-- `npm run build`: types and production build.
-- `npm audit`: dependency advisory check.
+```bash
+npm run typecheck
+npm run build
+npm test -- --maxWorkers=1 --testTimeout=30000
+```
 
-The browser verifies the real session cookie behavior; mocked integration tests cover failure states deterministically.
+Tests cover authentication, permissions, API errors, shared components and implemented modules. Browser checks complement mocks for layout, focus and cookies. `npm audit` is a separate dependency advisory check.
+
+### Backend contract scripts
+
+`scripts/verify-day10.mjs`, `verify-day11.mjs` and `verify-day12.mjs` are developer integration tests, not frontend application code or sample business records. They are not imported into the browser bundle or run by `npm run dev`.
+
+```bash
+node scripts/verify-day10.mjs ../drigo.dev.node
+node scripts/verify-day11.mjs ../drigo.dev.node
+node scripts/verify-day12.mjs ../drigo.dev.node
+```
+
+Each starts a separate in-memory backend on a free loopback port with persistence and simulation disabled. They check rental actions, customer lifecycle and debt payment without changing the running backend database. Fixed login values authenticate against the provided mock account. Keep these checks in version control; never add production credentials.
+
+See [scripts/README.md](scripts/README.md) for the assertions covered by each script. These checks are development additions, not filenames mandated by the handbook.
 
 ## Source structure
 
-- `src/auth/`: forms, auth requests, session state and route guards.
-- `src/api/client.ts`: shared fetch wrapper.
-- `src/permissions/`: permissions requests, account-scoped state, menu and module guards.
-- `src/components/`: table, modal, status badges and reusable states.
-- `src/dashboard/`: validated dashboard responses, independent request state, cards, charts and snapshot lists.
-- `src/App.tsx`: page routes, layout and logout control.
-- `src/pages/Overview.tsx`: health check and current account.
-- `src/styles.css`: shared styling, using system fonts.
-- `docs/DAY_02.md`: auth flow, tradeoffs and review notes.
-- `docs/DAY_03.md`: permissions, shared components and review notes.
-- `docs/DAY_04.md`: dashboard scope, response contracts and review notes.
-- `docs/DAY_05.md`: fleet, online users, recent activity and the Week 1 handoff checklist.
+- `src/auth/`: forms, session and guards.
+- `src/api/client.ts`: cookie requests, timeouts and HTTP errors.
+- `src/permissions/`: account grants and module access.
+- `src/components/`: reusable UI and icons.
+- `src/dashboard/`, `src/cars/`, `src/catalog/`, `src/rentals/`, `src/customers/`: module implementation.
+- `src/App.tsx`, `src/pages/`, `src/styles.css`: routes, overview and shared layout.
+- `scripts/`: isolated backend contract checks.
+- `docs/DAY_*.md`: daily scope, API findings and verification.
 
-`dist/`, `node_modules/` and `.env` are ignored by Git. Review source files under `src/`, not generated build files.
+## Backend limitations
 
-## Workflow
+- The database contains more fields and modules than public API responses expose. The frontend never reads the database directly.
+- Blocking sends `{ blocked: true, reason }`. The backend stores `blockReason`, but the customer detail mapper does not return it. Unblocking clears it. Displaying a persisted reason requires a backend API change.
+- Bonus history is empty in this mock; some devices and login history are generated on each request. Document images can be generic placeholders.
+- Pay all marks debt records paid; it does not retry rental payments or settle PaymentPending rentals. The preflight snapshot check cannot make separate GET/POST requests atomic.
+- Customer payment retry and other advanced operations are separate work. Backend support does not imply a finished UI.
 
-Start each task from up-to-date main on its own feature branch. Push the feature branch, open a PR with a screenshot, and merge after review. Do not push application changes directly to main or commit to the separate backend repository.
+## Workflow and next work
 
-Understand each change before committing. Work on at least 21 different days during the internship. The original car-browser project remains separate.
+Start from updated main on a feature branch. Make meaningful commits, push the feature branch, open a PR with a description and screenshot, then merge after review. Never push directly to main or modify the separate backend to hide an API mismatch.
 
-## Next task
+Understand each committed change. Work on at least 21 different days; commit dates must reflect actual work. The original car-browser project remains separate.
 
-This branch adds Cars list/detail and create/edit/delete. See `docs/DAY_06.md` for real API contracts, backend limitations and verification. Day 5 dashboard work was merged through its own PR and is included from updated main.
-
-Day 7 adds tracking, detail GPS maps, active-status transitions, commands and problematic cars; see `docs/DAY_07.md` for contracts and mock limitations. Publishing and PR review remain separate steps. Complete PR review and merge before marking the module done. The next planned task is Brands/Models/Colors CRUD.
+Current work: Day 12 customer tabs and UI refinements. Next planned module: Day 13 Debts. Publishing and PR review remain separate completion steps.

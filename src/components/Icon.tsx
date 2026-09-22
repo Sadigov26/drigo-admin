@@ -1,4 +1,5 @@
 const paths = {
+  image: 'M3 3h18v18H3V3Z M3 16l5-5 4 4 3-3 6 6 M16 7h.01',
   refresh: 'M20 7v5h-5 M4 17v-5h5 M6 7a7 7 0 0 1 12-1l2 3 M18 17a7 7 0 0 1-12 1l-2-3',
   plus: 'M12 5v14 M5 12h14',
   edit: 'm15 5 4 4 M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15v5Z',
