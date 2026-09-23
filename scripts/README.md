@@ -12,6 +12,7 @@ Install the backend dependencies first. Run these commands from the frontend dir
 node scripts/verify-day10.mjs ../drigo.dev.node
 node scripts/verify-day11.mjs ../drigo.dev.node
 node scripts/verify-day12.mjs ../drigo.dev.node
+node scripts/verify-day13.mjs ../drigo.dev.node
 ```
 
 The argument identifies the local backend repository. The scripts execute that repository's code, so use only the trusted internship backend. A failed assertion returns a nonzero exit code.
@@ -41,6 +42,10 @@ The argument identifies the local backend repository. The scripts execute that r
 - Pay outstanding debts, check paidCount, paid flags and zero outstanding total.
 - Check another customer's debts remain unchanged.
 - Repeat pay-all and check it reports zero newly paid records.
+
+### Day 13 — Debt management
+
+Day 13 additionally checks manual debt creation, exact splitting, selected/single/all payment, permanent deletion and 404, paid filters, removal from the debtor list, CSV headers/content and isolation of another account. Run `verify-day13.mjs` with the same backend argument as above.
 
 ## Why mock credentials appear here
 
