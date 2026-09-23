@@ -9,7 +9,9 @@ export class ApiError extends Error {
 }
 
 // The caller supplies a path such as /api/health or /api/admin/auth/me.
-export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+export function apiRequest(path: string, options: RequestInit, responseType: 'blob'): Promise<Blob>;
+export function apiRequest<T>(path: string, options?: RequestInit): Promise<T>;
+export async function apiRequest<T>(path: string, options: RequestInit = {}, responseType?: 'blob'): Promise<T | Blob> {
   if (!baseUrl) throw new Error('VITE_API_BASE_URL is missing. Check the frontend .env file.');
 
   const headers = new Headers(options.headers);
@@ -37,6 +39,13 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   // Form errors belong on the form. Session checks and logout handle their own 401s.
   if (response.status === 401 && path.startsWith('/api/admin/') && !path.startsWith('/api/admin/auth/')) {
     window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+  }
+  if (response.ok && responseType === 'blob') {
+    try { return await response.blob(); }
+    catch (error) {
+      if (options.signal?.aborted) throw error;
+      throw new Error(timeout.aborted ? 'The download timed out.' : 'The download was interrupted.');
+    }
   }
   let text: string;
   try {
