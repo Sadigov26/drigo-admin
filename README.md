@@ -2,7 +2,7 @@
 
 Internship frontend built with React, TypeScript and Vite, connected to the separate DRIGO mock backend. Business data and state transitions come from that API.
 
-## Implemented through Day 13 (local work)
+## Implemented through Day 14 (local work)
 
 - Two-step authentication, cookie sessions, route guards and logout.
 - Permissions-based navigation, shared tables, dialogs, icons and request states.
@@ -14,6 +14,7 @@ Internship frontend built with React, TypeScript and Vite, connected to the sepa
 - Customers: list/filter/detail, inline documents and image enlargement, approve/reject, block/unblock, delete/restore and UUID lookup.
 - Customer tabs: payments, debt, bonus, devices, login history, revenue and reservations. Pay all requires confirmation and refreshes server data.
 - Debts: debtor/all-debt lists, payment status filter, customer-scoped pay all/selected/single, equal split, add/delete and CSV export. See [Day 13 notes](docs/DAY_13.md) for mock limitations and branch dependency.
+- Fines & Accidents: fine/review/scraper lists, sync status, customer/company billing, dismissal, per-car records and accident CRUD. See [Day 14 notes](docs/DAY_14.md) for backend differences and verification.
 
 Other navigation entries do not mean every backend module is implemented. Daily notes record exact scope and limitations; PR review is a separate completion step.
 
@@ -47,6 +48,7 @@ node scripts/verify-day10.mjs ../drigo.dev.node
 node scripts/verify-day11.mjs ../drigo.dev.node
 node scripts/verify-day12.mjs ../drigo.dev.node
 node scripts/verify-day13.mjs ../drigo.dev.node
+node scripts/verify-day14.mjs ../drigo.dev.node
 ```
 
 Each starts a separate in-memory backend on a free loopback port with persistence and simulation disabled. They check rental actions, customer lifecycle and debt payment without changing the running backend database. Fixed login values authenticate against the provided mock account. Keep these checks in version control; never add production credentials.
@@ -61,6 +63,7 @@ See [scripts/README.md](scripts/README.md) for the assertions covered by each sc
 - `src/components/`: reusable UI and icons.
 - `src/dashboard/`, `src/cars/`, `src/catalog/`, `src/rentals/`, `src/customers/`: module implementation.
 - `src/debts/`: debt lists, account actions and CSV download.
+- `src/fines/`: fine review/billing, car fines and accident records.
 - `src/App.tsx`, `src/pages/`, `src/styles.css`: routes, overview and shared layout.
 - `scripts/`: isolated backend contract checks.
 - `docs/DAY_*.md`: daily scope, API findings and verification.
@@ -79,4 +82,4 @@ Start from updated main on a feature branch. Make meaningful commits, push the f
 
 Understand each committed change. Work on at least 21 different days; commit dates must reflect actual work. The original car-browser project remains separate.
 
-Current local work: Day 13 Debts, based on the pushed Day 12 branch pending its merge. Next planned module: Day 14 Fines & Accidents. Publishing and PR review remain separate completion steps.
+Current local work: Day 14 Fines & Accidents, based on main after Day 13 merged. Next planned module: Day 15 Reservations & Delivery. Publishing and PR review remain separate completion steps.
