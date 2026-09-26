@@ -57,7 +57,11 @@ Day 14 checks fine billing creates one unpaid debt, company billing/dismissal do
 
 Day 15 (`verify-day15.mjs`) checks reservation status filters, assign-driver/Busy/map transitions, cancel/Online/409 and driver/zone CRUD with 401/404. Reservation fixtures are inserted only in the script's disposable in-memory database, never the running database.
 
-## Why mock credentials appear here
+### Day 16 - Support
+
+`node scripts/verify-day16.mjs ../drigo.dev.node` verifies reply persistence and Open-to-Pending/unread transitions, status filters, operator assignment, mute/unmute, context, templates, suggestions and 401/400/404 responses. It creates a ticket only in its disposable in-memory backend, never in the running database.
+
+## Mock credential usage
 
 `admin` / `admin123` and OTP `123456` are the backend's documented training credentials. The tests use them to establish a real mock session; they do not implement login or seed business data in the frontend. These scripts are not imported by the application or included in its browser bundle. Never replace these values with production credentials.
 
