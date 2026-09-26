@@ -14,6 +14,7 @@ node scripts/verify-day11.mjs ../drigo.dev.node
 node scripts/verify-day12.mjs ../drigo.dev.node
 node scripts/verify-day13.mjs ../drigo.dev.node
 node scripts/verify-day14.mjs ../drigo.dev.node
+node scripts/verify-day15.mjs ../drigo.dev.node
 ```
 
 The argument identifies the local backend repository. The scripts execute that repository's code, so use only the trusted internship backend. A failed assertion returns a nonzero exit code.
@@ -51,6 +52,10 @@ Day 13 additionally checks manual debt creation, exact splitting, selected/singl
 ### Day 14 — Fines and accidents
 
 Day 14 checks fine billing creates one unpaid debt, company billing/dismissal do not, scraper/review/sync and per-car totals, accident CRUD/status and 401/404. Run `verify-day14.mjs` with the same backend argument. It mutates only an isolated in-memory instance.
+
+### Day 15 — Reservations and delivery
+
+Day 15 (`verify-day15.mjs`) checks reservation status filters, assign-driver/Busy/map transitions, cancel/Online/409 and driver/zone CRUD with 401/404. Reservation fixtures are inserted only in the script's disposable in-memory database, never the running database.
 
 ## Why mock credentials appear here
 

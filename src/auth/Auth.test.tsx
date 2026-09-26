@@ -151,6 +151,8 @@ describe('cookie authentication UI', () => {
     authenticated = true;
     open();
     await screen.findByRole('heading', { name: 'Overview' });
+    // Flush the authenticated render's passive effects before dispatching focus.
+    await act(async () => {});
     authenticated = false;
     fireEvent.focus(window);
     expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy();

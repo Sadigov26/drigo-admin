@@ -17,6 +17,7 @@ const Rentals = lazy(() => import('./rentals/Rentals'));
 const Customers = lazy(() => import('./customers/Customers'));
 const Debts = lazy(() => import('./debts/Debts'));
 const Fines = lazy(() => import('./fines/Fines'));
+const Delivery = lazy(() => import('./delivery/Delivery'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -118,7 +119,8 @@ export function App() {
                       : item.path === '/rentals' ? <Suspense fallback={<LoadingState message="Loading rentals…" />}><Rentals /></Suspense>
                       : item.path === '/customers' ? <Suspense fallback={<LoadingState message="Loading customers…" />}><Customers /></Suspense>
                       : item.path === '/debts' ? <Suspense fallback={<LoadingState message="Loading debts…" />}><Debts /></Suspense>
-                      : item.path === '/fines' ? <Suspense fallback={<LoadingState message="Loading fines…" />}><Fines /></Suspense> : undefined}
+                      : item.path === '/fines' ? <Suspense fallback={<LoadingState message="Loading fines…" />}><Fines /></Suspense>
+                      : item.path === '/reservations' || item.path === '/delivery' ? <Suspense fallback={<LoadingState message="Loading delivery…" />}><Delivery key={item.path} mode={item.path === '/reservations' ? 'reservations' : 'delivery'} /></Suspense> : undefined}
                   </ModulePage>
                 } />
               ))}
