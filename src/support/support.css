@@ -1,0 +1,42 @@
+.support-heading,.support-ticket-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; padding:20px; background:#edf3f8; border:1px solid #d5e2ef; border-radius:7px; margin-bottom:20px; }
+.support-heading h1,.support-ticket-heading h3 { margin:0 0 6px; }
+.support-heading p,.support-ticket-heading p { margin:0; color:#52667b; }
+.support-secondary { display:block; color:#52667b; margin-top:6px; }
+.support-excerpt { display:block; max-width:420px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.support-unread { display:inline-block; border-radius:12px; padding:3px 9px; background:#dbeafe; color:#174c87; font-weight:600; margin-left:8px; }
+.support-page .table-toolbar,.support-controls { align-items:flex-end; }
+.support-page .table-toolbar>label,.support-controls label { display:flex; flex-direction:column; gap:7px; }
+.support-page select,.support-detail select,.support-composer textarea { min-height:38px; border:1px solid #b5c3d1; border-radius:5px; padding:8px 10px; font:inherit; background:white; }
+.support-page select { min-width:150px; }
+.support-page .text-button { border:0; padding:0; background:none; color:#24577d; text-decoration:underline; }
+.modal:has(.support-detail) { width:min(1380px,calc(100vw - 32px)); }
+.support-controls { display:flex; gap:10px; flex-wrap:wrap; padding-bottom:18px; border-bottom:1px solid #d5e2ef; }
+.support-controls button { min-height:38px; }
+.support-workspace { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr); gap:22px; margin-top:20px; }
+.support-chat,.support-context { min-width:0; }
+.support-chat>h3,.support-context>h3 { margin:0 0 14px; }
+.support-messages { height:460px; overflow:auto; background:#f3f6fa; border:1px solid #d5e2ef; border-radius:7px; padding:16px; }
+.support-message { max-width:86%; width:fit-content; padding:13px 16px; margin:0 0 14px; border:1px solid #d5e2ef; border-radius:10px 10px 10px 2px; background:white; overflow-wrap:anywhere; }
+.support-message.is-operator { margin-left:auto; background:#e9f1fa; border-color:#c6d9ee; border-radius:10px 10px 2px 10px; }
+.support-message.is-bot { background:#f0edf8; border-color:#d9d2e9; }
+.support-message header { display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:space-between; font-size:12px; }
+.support-message time,.support-message>small { color:#53647a; font-size:11px; }
+.support-message p { white-space:pre-wrap; line-height:1.65; margin:9px 0; }
+.support-composer { margin-top:14px; }
+.support-composer>label { display:block; font-weight:600; margin-bottom:8px; }
+.support-composer textarea { width:100%; min-height:100px; resize:vertical; }
+.support-composer>div { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; }
+.support-composer small { color:#52667b; }
+.support-assistance { margin-top:20px; display:grid; gap:10px; }
+.support-assistance>details,.support-context-card { border:1px solid #d5e2ef; border-radius:6px; padding:15px; background:#fff; margin-bottom:12px; }
+.support-detail summary { cursor:pointer; color:#244564; font-weight:600; }
+.support-suggestion { margin-top:12px; background:#f5f8fb; padding:12px; border-radius:5px; }
+.support-suggestion small { display:block; color:#52667b; margin:5px 0; }
+.support-suggestion p { white-space:pre-wrap; line-height:1.6; }
+.support-context-card h4 { margin:0 0 12px; color:#244564; }
+.support-context .incident-fields { grid-template-columns:1fr; gap:10px; margin:12px 0 0; }
+.support-context-record { border-bottom:2px solid #e4eaf0; padding:8px 0; }
+.support-notice { padding:12px; background:#edf6f0; color:#285b42; border-radius:5px; }
+.support-warning { padding:14px; background:#fff7e6; border:1px solid #e8d8ae; border-radius:5px; }
+@media(max-width:900px) { .support-workspace { grid-template-columns:1fr; } .support-context { border-top:1px solid #d5e2ef; padding-top:20px; } }
+@media(max-width:600px) { .support-messages { height:360px; padding:10px; } .support-message { max-width:95%; } .support-composer>div { align-items:flex-start; flex-direction:column; } .support-controls label { width:100%; } .support-heading { align-items:flex-start; } }
