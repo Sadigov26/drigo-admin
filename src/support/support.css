@@ -15,24 +15,40 @@
 .support-workspace { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr); gap:22px; margin-top:20px; }
 .support-chat,.support-context { min-width:0; }
 .support-chat>h3,.support-context>h3 { margin:0 0 14px; }
-.support-messages { height:460px; overflow:auto; background:#f3f6fa; border:1px solid #d5e2ef; border-radius:7px; padding:16px; }
+.support-chat-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; border:1px solid #d5e2ef; border-bottom:0; border-radius:9px 9px 0 0; background:#fff; }
+.support-chat-heading h3 { margin:0; font-size:15px; }
+.support-chat-heading > span { color:#607186; font-size:12px; }
+.support-messages { height:460px; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; background:#f4f7fb; border:1px solid #d5e2ef; border-radius:0 0 9px 9px; padding:20px; }
 .support-message { max-width:86%; width:fit-content; padding:13px 16px; margin:0 0 14px; border:1px solid #d5e2ef; border-radius:10px 10px 10px 2px; background:white; overflow-wrap:anywhere; }
 .support-message.is-operator { margin-left:auto; background:#e9f1fa; border-color:#c6d9ee; border-radius:10px 10px 2px 10px; }
-.support-message.is-bot { background:#f0edf8; border-color:#d9d2e9; }
+.support-message.is-bot { margin-left:auto; margin-right:auto; max-width:92%; background:#f5f1fb; border-color:#ded5ed; border-radius:9px; }
+.support-sender { display:flex; align-items:center; flex-wrap:wrap; gap:7px; }
+.support-sender-role { padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; color:#506178; background:#edf1f5; }
+.is-operator .support-sender-role { color:#245998; background:#d9e8fb; }
+.is-bot .support-sender-role { color:#705194; background:#e9e0f4; }
 .support-message header { display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:space-between; font-size:12px; }
 .support-message time,.support-message>small { color:#53647a; font-size:11px; }
 .support-message p { white-space:pre-wrap; line-height:1.65; margin:9px 0; }
-.support-composer { margin-top:14px; }
+.support-composer { margin-top:14px; padding:16px; border:1px solid #d5e2ef; border-radius:9px; background:#fff; }
 .support-composer>label { display:block; font-weight:600; margin-bottom:8px; }
 .support-composer textarea { width:100%; min-height:100px; resize:vertical; }
 .support-composer>div { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; }
 .support-composer small { color:#52667b; }
 .support-assistance { margin-top:20px; display:grid; gap:10px; }
-.support-assistance>details,.support-context-card { border:1px solid #d5e2ef; border-radius:6px; padding:15px; background:#fff; margin-bottom:12px; }
+.support-assistance>details,.support-context-card { border:1px solid #d5e2ef; border-radius:8px; padding:15px; background:#fff; margin-bottom:12px; }
+.support-assistance>details { padding:0; overflow:hidden; margin-bottom:0; }
+.support-assistance>details>summary { padding:15px 16px; background:#eef4fa; }
+.support-assistance>details.support-ai>summary { background:#f3eff9; color:#624883; }
+.support-assistance-body { padding:0 14px 14px; max-height:420px; overflow:auto; overscroll-behavior:contain; }
+.support-assistance-note { color:#607186; font-size:12px; margin-top:14px; }
 .support-detail summary { cursor:pointer; color:#244564; font-weight:600; }
-.support-suggestion { margin-top:12px; background:#f5f8fb; padding:12px; border-radius:5px; }
+.support-suggestion { margin-top:12px; background:#fff; border:1px solid #dce5ef; padding:14px; border-radius:7px; }
+.support-suggestion header,.support-suggestion footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.support-suggestion footer { margin-top:14px; padding-top:10px; border-top:1px solid #e5ecf3; }
+.support-suggestion footer button { margin-left:auto; }
+.support-category { color:#516881; background:#edf3fa; border-radius:12px; padding:2px 8px; font-size:11px; }
 .support-suggestion small { display:block; color:#52667b; margin:5px 0; }
-.support-suggestion p { white-space:pre-wrap; line-height:1.6; }
+.support-suggestion p { white-space:pre-wrap; line-height:1.7; margin-top:10px; overflow-wrap:anywhere; }
 .support-context-card h4 { margin:0 0 12px; color:#244564; }
 .support-context .incident-fields { grid-template-columns:1fr; gap:10px; margin:12px 0 0; }
 .support-context-record { border-bottom:2px solid #e4eaf0; padding:8px 0; }

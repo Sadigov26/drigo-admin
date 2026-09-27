@@ -62,7 +62,7 @@ export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize
             <table>
               <caption className="sr-only">{caption}</caption>
               <thead><tr>{columns.map(column => (
-                <th key={column.key} scope="col" aria-sort={column.sortable
+                <th key={column.key} className={column.key === 'actions' ? 'table-actions-cell' : undefined} scope="col" aria-sort={column.sortable
                   ? sortBy === column.key ? sortOrder === 'asc' ? 'ascending' : 'descending' : 'none'
                   : undefined}>
                   {column.sortable ? (
@@ -82,7 +82,7 @@ export function Table<T>({ caption, columns, data, rowKey, total, page, pageSize
                   if ((event.target as HTMLElement).closest('button, a, input, select, textarea, summary') || window.getSelection()?.toString()) return;
                   onRowClick(row);
                 } : undefined}>{columns.map(column => (
-                  <td key={column.key}>{column.render ? column.render(row) : String(row[column.key] ?? '—')}</td>
+                  <td key={column.key} className={column.key === 'actions' ? 'table-actions-cell' : undefined}>{column.render ? column.render(row) : String(row[column.key] ?? '—')}</td>
                 ))}</tr>
               ))}</tbody>
             </table>
