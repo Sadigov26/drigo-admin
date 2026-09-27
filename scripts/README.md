@@ -61,6 +61,10 @@ Day 15 (`verify-day15.mjs`) checks reservation status filters, assign-driver/Bus
 
 `node scripts/verify-day16.mjs ../drigo.dev.node` verifies reply persistence and Open-to-Pending/unread transitions, status filters, operator assignment, mute/unmute, context, templates, suggestions and 401/400/404 responses. It creates a ticket only in its disposable in-memory backend, never in the running database.
 
+### Day 17 — Tariffs and subscriptions
+
+`node scripts/verify-day17.mjs ../drigo.dev.node` verifies seven lists, booking pagination, package/plan/template CRUD, singular package creation, 401/404 and missing distance mutation routes. Writes are limited to its disposable in-memory backend. HTTP 409 presentation is covered by frontend tests because these mock delete handlers do not enforce linked-record conflicts.
+
 ## Mock credential usage
 
 `admin` / `admin123` and OTP `123456` are the backend's documented training credentials. The tests use them to establish a real mock session; they do not implement login or seed business data in the frontend. These scripts are not imported by the application or included in its browser bundle. Never replace these values with production credentials.
