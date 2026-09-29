@@ -69,6 +69,10 @@ Day 15 (`verify-day15.mjs`) checks reservation status filters, assign-driver/Bus
 
 `node scripts/verify-day18.mjs ../drigo.dev.node` checks four list/detail/create/update/delete flows, explicit availability/status updates, discount/story analytics, referral settings persistence and 401/404 responses. It starts its own ephemeral backend with persistence and simulation disabled. No running development records are changed. Delete-conflict UI is tested with a mocked 409 because the provided backend does not enforce this constraint.
 
+### Day 19 — Analytics and monthly reports
+
+Day 19: `node scripts/verify-day19.mjs ../drigo.dev.node` verifies analytics response shapes, six monthly reports and matching drill-downs, totals/net arithmetic, statistics, the hyphenated financials endpoint, Salik/ENOC pagination and 401/404. It is read-only against an isolated frozen backend.
+
 ## Mock credential usage
 
 `admin` / `admin123` and OTP `123456` are the backend's documented training credentials. The tests use them to establish a real mock session; they do not implement login or seed business data in the frontend. These scripts are not imported by the application or included in its browser bundle. Never replace these values with production credentials.
