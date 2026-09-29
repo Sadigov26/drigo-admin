@@ -2,7 +2,7 @@
 
 Internship frontend built with React, TypeScript and Vite, connected to the separate DRIGO mock backend. Business data and state transitions come from that API.
 
-## Implemented scope through Day 17
+## Implemented scope through Day 18
 
 - Two-step authentication, cookie sessions, route guards and logout.
 - Permissions-based navigation, shared tables, dialogs, icons and request states.
@@ -22,6 +22,8 @@ Other navigation entries do not mean every backend module is implemented. Daily 
 Day 16 adds Support: ticket search/status/pagination, chat replies, customer context, assignment/mute/status controls, saved replies and backend suggestions. See [Day 16 notes](docs/DAY_16.md). Day 15 is included from merged main.
 
 Day 17 adds package/plan/template CRUD and read-only insurance, distance allowances and subscription plans/bookings. Distance mutations are unavailable in the backend; see [Day 17 notes](docs/DAY_17.md) for this open requirement and the singular package-create endpoint.
+
+Day 18 adds Promotions, Discounts, Promo codes and Stories CRUD, availability controls, media previews, discount/story analytics and editable referral rewards. See [Day 18 notes](docs/DAY_18.md) for actual fields, derived campaign statuses and mock analytics limitations.
 
 ## Local setup
 
@@ -56,6 +58,8 @@ node scripts/verify-day13.mjs ../drigo.dev.node
 node scripts/verify-day14.mjs ../drigo.dev.node
 node scripts/verify-day15.mjs ../drigo.dev.node
 node scripts/verify-day16.mjs ../drigo.dev.node
+node scripts/verify-day17.mjs ../drigo.dev.node
+node scripts/verify-day18.mjs ../drigo.dev.node
 ```
 
 Each starts a separate in-memory backend on a free loopback port with persistence and simulation disabled. They check rental actions, customer lifecycle and debt payment without changing the running backend database. Fixed login values authenticate against the provided mock account. Keep these checks in version control; never add production credentials.
@@ -74,6 +78,7 @@ See [scripts/README.md](scripts/README.md) for the assertions covered by each sc
 - `src/delivery/`: reservations, active delivery map, drivers and zones.
 - `src/support/`: tickets, conversations, customer context and response assistance.
 - `src/tariffs/`: tariff forms, pricing lists, insurance and subscriptions.
+- `src/promotions/`: campaigns, discounts, promo codes, story media, analytics and referral settings.
 - `src/App.tsx`, `src/pages/`, `src/styles.css`: routes, overview and shared layout.
 - `scripts/`: isolated backend contract checks.
 - `docs/DAY_*.md`: daily scope, API findings and verification.
@@ -92,4 +97,4 @@ Start from updated main on a feature branch. Make meaningful commits, push the f
 
 Understand each committed change. Work on at least 21 different days; commit dates must reflect actual work. The original car-browser project remains separate.
 
-Current work: Day 17 Tariffs & Subscriptions, stacked on Day 16 while its PR is pending. Earlier modules remain included. Next planned module: Day 18 Promotions. Publishing and PR review remain separate completion steps.
+Current work: Day 18 Promotions, based on merged Day 17 so earlier modules remain included. Next planned module: Day 19 Analytics & Monthly Report. Publishing and PR review remain separate completion steps.
