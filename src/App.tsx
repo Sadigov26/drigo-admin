@@ -21,6 +21,7 @@ const Delivery = lazy(() => import('./delivery/Delivery'));
 const Support = lazy(() => import('./support/Support'));
 const Tariffs = lazy(() => import('./tariffs/Tariffs'));
 const Promotions = lazy(() => import('./promotions/Promotions'));
+const Analytics = lazy(() => import('./analytics/Analytics'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -126,7 +127,8 @@ export function App() {
                       : item.path === '/reservations' || item.path === '/delivery' ? <Suspense fallback={<LoadingState message="Loading delivery…" />}><Delivery key={item.path} mode={item.path === '/reservations' ? 'reservations' : 'delivery'} /></Suspense>
                       : item.path === '/support' ? <Suspense fallback={<LoadingState message="Loading support…" />}><Support /></Suspense>
                       : item.path === '/tariffs' ? <Suspense fallback={<LoadingState message="Loading tariffs…" />}><Tariffs /></Suspense>
-                      : item.path === '/promotions' ? <Suspense fallback={<LoadingState message="Loading promotions…" />}><Promotions /></Suspense> : undefined}
+                      : item.path === '/promotions' ? <Suspense fallback={<LoadingState message="Loading promotions…" />}><Promotions /></Suspense>
+                      : item.path === '/analytics' ? <Suspense fallback={<LoadingState message="Loading analytics…" />}><Analytics /></Suspense> : undefined}
                   </ModulePage>
                 } />
               ))}
