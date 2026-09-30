@@ -19,9 +19,31 @@ it('keeps monthly server totals and uses selected month count', async () => {
 it('guards drill-down month before making a request', async () => {
   await expect(monthDetail('2026-13')).rejects.toThrow();
   expect(apiRequest).not.toHaveBeenCalled();
-  vi.mocked(apiRequest).mockResolvedValue({ month: '2026-08' });
+  vi.mocked(apiRequest).mockResolvedValue({ month: '2026-08', revenue: { total: 100 }, operatingCost: 120, netRevenue: -20 });
   await monthDetail('2026-08');
   expect(apiRequest).toHaveBeenCalledWith('/api/admin/reports/monthly/2026-08', expect.anything());
+});
+it('rejects wrong-month and malformed drill-down responses', async () => {
+  vi.mocked(apiRequest).mockResolvedValueOnce({ month: '2026-07', revenue: { total: 100 }, operatingCost: 20, netRevenue: 80 });
+  await expect(monthDetail('2026-08')).rejects.toThrow('selected month');
+  vi.mocked(apiRequest).mockResolvedValueOnce({ month: '2026-08', revenue: { total: 100 }, operatingCost: 20 });
+  await expect(monthDetail('2026-08')).rejects.toThrow('chart values');
+});
+it('rejects duplicate or invalid report months before rendering', async () => {
+  const row = { month: '2026-08', revenue: { total: 100 }, operatingCost: 120, netRevenue: -20 };
+  for (const months of [[row, row], [{ ...row, month: '2026-13' }]]) {
+    vi.mocked(apiRequest).mockResolvedValueOnce({ months, totals: {} });
+    await expect(monthly(6)).rejects.toThrow('report month');
+  }
+});
+it('does not request invalid report periods', async () => {
+  for (const period of [0, 25, 1.5, NaN]) await expect(monthly(period)).rejects.toThrow('period');
+  expect(apiRequest).not.toHaveBeenCalled();
+});
+it('preserves negative net revenue and zero totals', async () => {
+  const response = { months: [{ month: '2026-08', revenue: { total: 0 }, operatingCost: 20, netRevenue: -20 }], totals: { revenue: 0, netRevenue: -20 } };
+  vi.mocked(apiRequest).mockResolvedValue(response);
+  expect(await monthly(6)).toEqual(response);
 });
 it('loads every transaction page with abort signal', async () => {
   vi.mocked(apiRequest).mockResolvedValueOnce({ data: [{ id: 1, amount: 4 }], total: 2 }).mockResolvedValueOnce({ data: [{ id: 2, amount: 8 }], total: 2 });

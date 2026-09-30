@@ -63,4 +63,10 @@ MonthlyReport intentionally has three separate responsibilities: `/reports/stati
 
 ## Branch
 
-`feature/day-19` is based on Day 18, preserving all implemented modules. Day 18 PR #18 was still open during implementation; review it before merging Day 19. Day 20 Fleet & Geo + Notifications is not implemented here.
+### September 30 follow-up review
+
+Added real response-contract guards: reject duplicate/invalid month labels, reject a drill-down response for a different month, validate drill-down financial values before rendering, and reject invalid report periods before requesting. Regression tests retain valid zero and negative net revenue values. This is a new follow-up commit; original commits and PR publication dates are not rewritten. Day 18 has merged and PR #19 now targets main.
+
+Focused analytics suite: 14 tests passed (including four new regression tests).
+
+`feature/day-19` is based on Day 18, preserving all implemented modules. Day 18 PR #18 was open during initial implementation and has since merged. PR #19 targets main and still requires review. Day 20 Fleet & Geo + Notifications is not implemented here.

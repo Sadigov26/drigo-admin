@@ -19,14 +19,32 @@ export function points(value: unknown, label: string, series: Series[]) {
   return result;
 }
 export const monthlySeries = [{ key: 'revenue.total', label: 'Revenue' }, { key: 'operatingCost', label: 'Operating cost' }, { key: 'netRevenue', label: 'Net revenue' }];
+const validMonth = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
+function validateMonths(value: unknown) {
+  const rows = points(value, 'month', monthlySeries);
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (!validMonth(row.month) || seen.has(row.month)) throw new Error('Invalid or duplicate report month. Refresh to try again.');
+    seen.add(row.month);
+  }
+  return rows;
+}
 export async function monthly(months: number, signal?: AbortSignal) {
+  if (!Number.isInteger(months) || months < 1 || months > 24) throw new Error('Choose a period between 1 and 24 months.');
   const response = await getReport(`reports/monthly?months=${months}`, signal);
-  points(response.months, 'month', monthlySeries); object(response.totals);
+  validateMonths(response.months);
+  const totals = object(response.totals);
+  for (const value of Object.values(totals)) {
+    if (typeof value === 'number' && !Number.isFinite(value)) throw new Error('Invalid report total.');
+  }
   return response;
 }
-export function monthDetail(month: string, signal?: AbortSignal) {
-  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) return Promise.reject(new Error('Invalid month.'));
-  return getReport(`reports/monthly/${month}`, signal);
+export async function monthDetail(month: string, signal?: AbortSignal) {
+  if (!validMonth(month)) throw new Error('Invalid month.');
+  const response = await getReport(`reports/monthly/${month}`, signal);
+  if (response.month !== month) throw new Error('The response does not match the selected month. Refresh to try again.');
+  validateMonths([response]);
+  return response;
 }
 export async function transactions(kind: 'salik' | 'enoc', signal?: AbortSignal) {
   const result: Row[] = []; const ids = new Set<unknown>(); let total: number | undefined;
