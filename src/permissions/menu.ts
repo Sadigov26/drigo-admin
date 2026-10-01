@@ -14,5 +14,8 @@ export const menuItems = [
   { label: 'Promotions', path: '/promotions', permission: 'promotions.view' },
   { label: 'Analytics', path: '/analytics', permission: 'analytics.view' },
   { label: 'Fleet', path: '/fleet', permission: 'fleet.view' },
+  // No notifications.* grants exist in the mock catalogue. Use Settings grants
+  // as the conservative UI policy until the backend defines dedicated grants.
+  { label: 'Notifications', path: '/notifications', permission: 'settings.view' },
   { label: 'Settings', path: '/settings', permission: 'settings.view' },
 ];

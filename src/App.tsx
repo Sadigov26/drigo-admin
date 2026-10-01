@@ -22,6 +22,8 @@ const Support = lazy(() => import('./support/Support'));
 const Tariffs = lazy(() => import('./tariffs/Tariffs'));
 const Promotions = lazy(() => import('./promotions/Promotions'));
 const Analytics = lazy(() => import('./analytics/Analytics'));
+const Fleet = lazy(() => import('./fleet/Fleet'));
+const Notifications = lazy(() => import('./fleet/Notifications'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -128,7 +130,9 @@ export function App() {
                       : item.path === '/support' ? <Suspense fallback={<LoadingState message="Loading support…" />}><Support /></Suspense>
                       : item.path === '/tariffs' ? <Suspense fallback={<LoadingState message="Loading tariffs…" />}><Tariffs /></Suspense>
                       : item.path === '/promotions' ? <Suspense fallback={<LoadingState message="Loading promotions…" />}><Promotions /></Suspense>
-                      : item.path === '/analytics' ? <Suspense fallback={<LoadingState message="Loading analytics…" />}><Analytics /></Suspense> : undefined}
+                      : item.path === '/analytics' ? <Suspense fallback={<LoadingState message="Loading analytics…" />}><Analytics /></Suspense>
+                      : item.path === '/fleet' ? <Suspense fallback={<LoadingState message="Loading fleet…" />}><Fleet /></Suspense>
+                      : item.path === '/notifications' ? <Suspense fallback={<LoadingState message="Loading notifications…" />}><Notifications /></Suspense> : undefined}
                   </ModulePage>
                 } />
               ))}

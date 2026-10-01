@@ -2,7 +2,7 @@
 
 Internship frontend built with React, TypeScript and Vite, connected to the separate DRIGO mock backend. Business data and state transitions come from that API.
 
-## Implemented scope through Day 19
+## Implemented scope through Day 20
 
 - Two-step authentication, cookie sessions, route guards and logout.
 - Permissions-based navigation, shared tables, dialogs, icons and request states.
@@ -26,6 +26,8 @@ Day 17 adds package/plan/template CRUD and read-only insurance, distance allowan
 Day 18 adds Promotions, Discounts, Promo codes and Stories CRUD, availability controls, media previews, discount/story analytics and editable referral rewards. See [Day 18 notes](docs/DAY_18.md) for actual fields, derived campaign statuses and mock analytics limitations.
 
 Day 19 adds analytics charts, a monthly report table/chart/totals and drill-down, all-time statistics, monthly financials, and Salik/ENOC summaries with transaction lists. [Day 19 notes](docs/DAY_19.md) document backend timezone and metric limitations.
+
+Day 20 adds Fleet plan/moves/utilization, Geo zone CRUD with a polygon map, parking/gas lists, and Notifications broadcast with audience preview/confirmation, campaigns, schedules and history/feed. [Day 20 notes](docs/DAY_20.md) explain mock dispatch limitations and the Settings-permission fallback.
 
 ## Local setup
 
