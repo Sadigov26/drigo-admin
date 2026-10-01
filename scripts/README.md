@@ -73,7 +73,12 @@ Day 15 (`verify-day15.mjs`) checks reservation status filters, assign-driver/Bus
 
 Day 19: `node scripts/verify-day19.mjs ../drigo.dev.node` verifies analytics response shapes, six monthly reports and matching drill-downs, totals/net arithmetic, statistics, the hyphenated financials endpoint, Salik/ENOC pagination and 401/404. It is read-only against an isolated frozen backend.
 
+### Day 20 — Fleet, Geo and Notifications
+
+`node scripts/verify-day20.mjs ../drigo.dev.node` checks fleet reads, geo CRUD, audience previews, mock broadcast/history/feed, campaign CRUD, schedules, pagination and 401/404 in an isolated backend (`PERSIST=false`, `SIM_TICK_MS=0`). It does not change running development data or send real notifications.
+
 ## Mock credential usage
+
 
 `admin` / `admin123` and OTP `123456` are the backend's documented training credentials. The tests use them to establish a real mock session; they do not implement login or seed business data in the frontend. These scripts are not imported by the application or included in its browser bundle. Never replace these values with production credentials.
 
