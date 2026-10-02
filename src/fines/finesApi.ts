@@ -33,7 +33,7 @@ export async function loadRecords(view: View, signal?: AbortSignal): Promise<Rec
     }
     if (!next.length) break;
   }
-  throw new Error('The list is too large or incomplete. Narrowing requires backend support.');
+  throw new Error('This list is too large or incomplete to search here. Use the status filter to narrow it down.');
 }
 export const syncStatus = (signal?: AbortSignal) => apiRequest<Record<string, unknown>>(base + '/manual-fines/sync-status', { signal });
 export async function carDetails(id: number, signal?: AbortSignal) {

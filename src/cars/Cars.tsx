@@ -113,7 +113,7 @@ export default function Cars() {
       onPageChange={next => setQuery(previous => previous.page === next ? previous : { ...previous, page: next })} onRetry={() => setRevision(value => value + 1)} />
     <Modal isOpen={selection != null} title={selection?.mode === 'create' ? 'Add car' : selection?.mode === 'edit' ? 'Edit car' : selection?.mode === 'delete' ? 'Delete car' : 'Car details'} onClose={close}>
       {actionError && <p className="error-message" role="alert">{actionError}</p>}
-      {selection?.mode === 'delete' ? <><p>Delete <strong>{selection.car.plateNumber ?? `car #${selection.car.id}`}</strong>? This cannot be undone.</p><p className="car-note">The backend will reject deletion if the car has an active rental.</p><div className="car-actions"><button disabled={busy} onClick={close}>Cancel</button><button className="car-danger" disabled={busy} onClick={() => void remove()}>{busy ? 'Deleting…' : 'Confirm delete'}</button></div></>
+      {selection?.mode === 'delete' ? <><p>Delete <strong>{selection.car.plateNumber ?? `car #${selection.car.id}`}</strong>? This cannot be undone.</p><p className="car-note">Cars with an active rental cannot be deleted.</p><div className="car-actions"><button disabled={busy} onClick={close}>Cancel</button><button className="car-danger" disabled={busy} onClick={() => void remove()}>{busy ? 'Deleting…' : 'Confirm delete'}</button></div></>
         : selection?.mode === 'create' ? <CarForm car={null} busy={busy} onSave={body => void save(body)} onCancel={close} />
         : detailError ? <ErrorState message={detailError} onRetry={() => setDetailAttempt(value => value + 1)} />
         : !detail ? <LoadingState message="Loading car…" />

@@ -34,13 +34,13 @@ export function RecordEditor({ path, record, remove = false, onClose, onSaved }:
   }
   const title = `${remove ? 'Delete' : record ? 'Edit' : 'Add'} ${geo ? 'geo zone' : path.endsWith('campaigns') ? 'campaign' : 'scheduled notification'}`;
   return <Modal isOpen title={title} onClose={close}><form className="fleet-form" onSubmit={e => { e.preventDefault(); void submit(); }}>
-    {remove ? <p>Delete “{String(record?.name ?? record?.title ?? record?.id)}”? This cannot be undone.</p> : <fieldset disabled={busy || uncertain}>
+    {remove ? <div className="fleet-note"><strong>This action cannot be undone.</strong><p>Delete “{String(record?.name ?? record?.title ?? record?.id)}”?</p></div> : <fieldset disabled={busy || uncertain}>
       <label>{geo ? 'Zone name' : 'Title'}<input required maxLength={200} value={String(draft[geo ? 'name' : 'title'])} onChange={e => change(geo ? 'name' : 'title', e.target.value)} /></label>
       {geo ? <>
         <div className="fleet-form-grid"><label>Type<select value={String(draft.type)} onChange={e => change('type', e.target.value)}>{zoneTypes.map(type => <option key={type}>{type}</option>)}</select></label><label>Color<input type="color" value={String(draft.color)} onChange={e => change('color', e.target.value)} /></label></div>
         <label className="fleet-checkbox"><input type="checkbox" checked={draft.isActive === true} onChange={e => change('isActive', e.target.checked)} />Active zone</label>
         <label>Polygon coordinates<textarea required rows={8} value={String(draft.polygon)} onChange={e => change('polygon', e.target.value)} /></label>
-        <p className="fleet-note">Enter at least three points as JSON: [{'{"lat":25.20,"lng":55.27}'}, …]. Latitude first, longitude second. City is not stored by this backend.</p>
+        <p className="fleet-note">Enter at least three points as JSON: [{'{"lat":25.20,"lng":55.27}'}, …]. Latitude first, longitude second.</p>
       </> : <>
         <label>Message<textarea required maxLength={5000} rows={5} value={String(draft.body)} onChange={e => change('body', e.target.value)} /></label>
         <div className="fleet-form-grid"><label>Target audience<select value={String(draft.targetAudience)} onChange={e => change('targetAudience', e.target.value)}>{audiences.map(a => <option key={a}>{a}</option>)}</select></label>

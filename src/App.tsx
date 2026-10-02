@@ -24,6 +24,9 @@ const Promotions = lazy(() => import('./promotions/Promotions'));
 const Analytics = lazy(() => import('./analytics/Analytics'));
 const Fleet = lazy(() => import('./fleet/Fleet'));
 const Notifications = lazy(() => import('./fleet/Notifications'));
+const Operations = lazy(() => import('./operations/Operations'));
+const Settings = lazy(() => import('./operations/Settings'));
+const Admins = lazy(() => import('./operations/Admins'));
 
 function PageTitle() {
   const { pathname } = useLocation();
@@ -66,7 +69,7 @@ function Layout() {
           {permissions.status === 'loading' && <LoadingState message="Loading menu…" />}
           {permissions.status === 'error' && <ErrorState message="Menu unavailable." onRetry={retry} />}
           {menuItems.filter(item => can(item.permission)).map(item => (
-            <NavLink key={item.path} to={item.path}>{item.label}</NavLink>
+            <NavLink key={item.path} to={item.path} className={item.path === '/operations' || (item.path === '/admins' && !can('fleet.view')) ? 'sidebar-section-break' : undefined}>{item.label}</NavLink>
           ))}
         </nav>
         <div className="sidebar-footer">Dubai, UAE</div>
@@ -132,7 +135,10 @@ export function App() {
                       : item.path === '/promotions' ? <Suspense fallback={<LoadingState message="Loading promotions…" />}><Promotions /></Suspense>
                       : item.path === '/analytics' ? <Suspense fallback={<LoadingState message="Loading analytics…" />}><Analytics /></Suspense>
                       : item.path === '/fleet' ? <Suspense fallback={<LoadingState message="Loading fleet…" />}><Fleet /></Suspense>
-                      : item.path === '/notifications' ? <Suspense fallback={<LoadingState message="Loading notifications…" />}><Notifications /></Suspense> : undefined}
+                      : item.path === '/notifications' ? <Suspense fallback={<LoadingState message="Loading notifications…" />}><Notifications /></Suspense>
+                      : item.path === '/operations' ? <Suspense fallback={<LoadingState message="Loading operations…" />}><Operations /></Suspense>
+                      : item.path === '/settings' ? <Suspense fallback={<LoadingState message="Loading settings…" />}><Settings /></Suspense>
+                      : item.path === '/admins' ? <Suspense fallback={<LoadingState message="Loading administrators…" />}><Admins /></Suspense> : undefined}
                   </ModulePage>
                 } />
               ))}

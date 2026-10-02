@@ -1,0 +1,4 @@
+.retry-payment { display: grid; gap: 10px; padding: 14px 16px; margin-top: 12px; border: 1px solid #ecdcbf; border-radius: 8px; background: #fff9ee; }
+.retry-payment p { margin: 0; }
+.retry-payment-note { color: #7a4b0c; font-size: 14px; }
+.retry-payment-actions { display: flex; flex-wrap: wrap; gap: 8px; }

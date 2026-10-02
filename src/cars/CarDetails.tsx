@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { RecordMedia, RecordLink } from '../components/RecordMedia';
 import type { CarDetail } from './carsApi';
 import { StatusBadge } from '../components/StatusBadge';
 import { Icon } from '../components/Icon';
@@ -8,6 +9,7 @@ const text = (value: unknown) => typeof value === 'string' && value.trim() ? val
 
 function label(key: string) { return key.replace(/([A-Z])/g, ' $1').replace(/^./, value => value.toUpperCase()); }
 function valueView(value: unknown, field = ''): ReactNode {
+  if (typeof value === 'string' && /^https?:\/\//i.test(value)) return /photo|image|thumbnail|medium/i.test(field) ? <RecordMedia value={value} title="Vehicle photo" /> : <RecordLink value={value} />;
   if (value == null || value === '') return '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (Array.isArray(value)) return value.length ? <ul>{value.map((item, index) => <li key={index}>{valueView(item)}</li>)}</ul> : 'None';

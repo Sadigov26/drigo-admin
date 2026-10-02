@@ -7,6 +7,7 @@ const tones: Record<string, string> = {
   Completed: 'info', Started: 'info', DriverAssigned: 'info', PickingUp: 'info',
   InDelivery: 'info', Delivered: 'info', Confirmed: 'info', Billed: 'info',
   Scheduled: 'info', Sending: 'warning', Sent: 'success', Planned: 'info', InProgress: 'warning',
+  healthy: 'success', running: 'success', unhealthy: 'danger', stopped: 'danger', degraded: 'warning',
 };
 
 export function StatusBadge({ status }: { status: string }) {

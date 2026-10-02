@@ -44,7 +44,7 @@ const userColumns: Column<OnlineUser>[] = [
 ];
 export function OnlineUsersPanel({ state, retry }: { state: Resource<OnlineUser[]>; retry: () => void }) {
   return <Panel title="Online users" state={state} retry={retry}>{data => <>
-    <p className="dashboard-note">Up to 50 customers marked online by the backend. Last login is not a live activity timestamp.</p>
+    <p className="dashboard-note">Up to 50 online customers. Last login shows the most recent sign-in.</p>
     {data.length ? <SnapshotTable title="Online users" rows={data} columns={userColumns} filterKey="platform" filterLabel="Platform" pageSize={10} />
       : <EmptyState message="No customers are currently online." />}
   </>}</Panel>;
@@ -69,7 +69,7 @@ const messageColumns: Column<SupportMessage>[] = [
 ];
 export function RecentActivityPanel({ state, retry }: { state: Resource<RecentActivity>; retry: () => void }) {
   return <Panel title="Recent activity" state={state} retry={retry}>{data => <>
-    <p className="dashboard-note">Up to six records per section, in the order returned by the backend.</p>
+    <p className="dashboard-note">Up to six recent records per section.</p>
     <section aria-label="Recent rentals"><h3>Recent rentals</h3>
       {data.rentals.length ? <SnapshotTable title="Recent rentals" rows={data.rentals} columns={rentalColumns} filterKey="status" filterLabel="Rental status" /> : <EmptyState message="No recent rentals." />}
     </section>

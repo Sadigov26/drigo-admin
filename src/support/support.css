@@ -56,3 +56,4 @@
 .support-warning { padding:14px; background:#fff7e6; border:1px solid #e8d8ae; border-radius:5px; }
 @media(max-width:900px) { .support-workspace { grid-template-columns:1fr; } .support-context { border-top:1px solid #d5e2ef; padding-top:20px; } }
 @media(max-width:600px) { .support-messages { height:360px; padding:10px; } .support-message { max-width:95%; } .support-composer>div { align-items:flex-start; flex-direction:column; } .support-controls label { width:100%; } .support-heading { align-items:flex-start; } }
+@media(max-width:480px) { .support-messages { height:300px; } }

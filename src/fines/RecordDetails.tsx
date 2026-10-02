@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { RecordMedia, RecordLink } from '../components/RecordMedia';
 import { CustomerImage, date } from '../customers/CustomerDetails';
 import { StatusBadge } from '../components/StatusBadge';
 
@@ -7,6 +8,7 @@ const label = (key: string) => key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/
 const imageField = (key: string) => /^(photo|profilePhoto|image|thumbnail|medium)Url$/.test(key);
 function value(key: string, item: unknown): ReactNode {
   if (imageField(key)) return <CustomerImage value={item} title={label(key.replace(/Url$/, ''))} portrait={/photo/i.test(key)} />;
+  if (typeof item === 'string' && /^https?:\/\//i.test(item)) return /photo|image|thumbnail|medium|media|^url$/i.test(key) ? <RecordMedia value={item} /> : <RecordLink value={item} />;
   if (item === null || item === undefined || item === '') return '—';
   if (/^fuel(Level|Percentage)$/i.test(key)) return typeof item === 'number' && Number.isFinite(item) ? `${Math.round(item)}%` : '—';
   if (/^(maxSpeed|speed)$/.test(key)) return typeof item === 'number' && Number.isFinite(item) ? `${Math.round(item)} km/h` : '—';

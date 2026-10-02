@@ -6,6 +6,8 @@
 .dashboard-updated, .dashboard-note, .trend-period { color: #626a75; font-size: 12px; margin: 0 0 12px; }
 .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0; }
 .kpi-card { padding: 17px 18px; background: white; border: 1px solid #e1e4e8; border-radius: 5px; min-width: 0; }
+.kpi-card { transition: box-shadow .15s; }
+.kpi-card:hover { box-shadow: 0 2px 8px rgb(0 0 0 / 8%); }
 .kpi-card.tone-sage { background: var(--soft-sage); border-color: #d5e3d8; }
 .kpi-card.tone-blue { background: var(--soft-blue); border-color: #d8e3ed; }
 .kpi-card.tone-sand { background: var(--soft-sand); border-color: #e9ddc4; }

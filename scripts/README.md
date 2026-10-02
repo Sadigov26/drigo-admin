@@ -77,6 +77,12 @@ Day 19: `node scripts/verify-day19.mjs ../drigo.dev.node` verifies analytics res
 
 `node scripts/verify-day20.mjs ../drigo.dev.node` checks fleet reads, geo CRUD, audience previews, mock broadcast/history/feed, campaign CRUD, schedules, pagination and 401/404 in an isolated backend (`PERSIST=false`, `SIM_TICK_MS=0`). It does not change running development data or send real notifications.
 
+### Day 21 — Operations, settings and security
+
+`node scripts/verify-day21.mjs ../drigo.dev.node` checks cleaning cancellation/statistics, operational lists and inquiry status, scraper trigger, monitoring, fee updates, IP/CIDR and country add/remove, SMS configuration, safe administrator fields and permission replacement. It also checks missing handbook-style routes. All mutations run in the disposable backend, not the running development database. No real security policy or administrator grant is changed. Frontend tests separately cover confirmations, validation, 409, uncertain results, permissions and cross-module offline handling.
+
+The Day 21 script also checks payment retry success/failure and read-back, wrong-owner rejection, unchanged debts/rental status, problem-report status updates, parking sync acknowledgement, and previous car journeys/route points. Retry outcomes are deterministic only inside this disposable test backend.
+
 ## Mock credential usage
 
 

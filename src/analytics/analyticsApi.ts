@@ -61,7 +61,7 @@ export async function transactions(kind: 'salik' | 'enoc', signal?: AbortSignal)
     if (result.length === total) return result;
     if (!batch.length || result.length > total) break;
   }
-  throw new Error('Incomplete transaction snapshot. Refresh to try again.');
+  throw new Error('Incomplete transaction list. Refresh and try again.');
 }
 export function grouped(rows: Row[], key: string) {
   const groups = new Map<string, Row>();

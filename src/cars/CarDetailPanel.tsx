@@ -7,10 +7,12 @@ import { Icon } from '../components/Icon';
 import type { IconName } from '../components/Icon';
 import './telematics.css';
 const CarRoute = lazy(() => import('./CarRoute'));
-export type CarTab = 'summary' | 'status' | 'route' | 'technical';
+const CarJourneys = lazy(() => import('./CarJourneys'));
+export type CarTab = 'summary' | 'status' | 'route' | 'journeys' | 'technical';
 const tabs: { key: CarTab; label: string; icon: IconName }[] = [
   { key: 'summary', label: 'Summary', icon: 'car' }, { key: 'status', label: 'Vehicle status', icon: 'power' },
   { key: 'route', label: 'GPS route', icon: 'map' }, { key: 'technical', label: 'Technical details', icon: 'settings' },
+  { key: 'journeys', label: 'Previous journeys', icon: 'map' },
 ];
 export function CarDetailPanel({ car, tab, onTab, onChanged, busy, onBusy }: { car: CarDetail; tab: CarTab; onTab: (tab: CarTab) => void; onChanged: () => void; busy: boolean; onBusy: (busy: boolean) => void }) {
   return <div className="car-detail-panel">
@@ -19,5 +21,6 @@ export function CarDetailPanel({ car, tab, onTab, onChanged, busy, onBusy }: { c
     {tab === 'technical' && <CarDetails car={car} technical />}
     {tab === 'status' && <VehicleControls carId={car.id} onChanged={onChanged} onBusy={onBusy} />}
     {tab === 'route' && <Suspense fallback={<LoadingState message="Loading map…" />}><CarRoute carId={car.id} /></Suspense>}
+    {tab === 'journeys' && <Suspense fallback={<LoadingState message="Loading journeys…" />}><CarJourneys carId={car.id} /></Suspense>}
   </div>;
 }

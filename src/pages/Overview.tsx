@@ -27,15 +27,15 @@ export function Overview() {
         const result = await apiRequest<{ status: string }>('/api/health', {
           signal: controller.signal,
         });
-        if (result.status !== 'ok') throw new Error('The backend is not ready.');
+        if (result.status !== 'ok') throw new Error('The service is temporarily unavailable.');
         if (!controller.signal.aborted) {
           setConnection({ status: 'online', checkedAt: new Date().toLocaleTimeString() });
         }
       } catch (error) {
         if (!controller.signal.aborted || timedOut) {
           setConnection({ status: 'offline', message: timedOut
-            ? 'The connection timed out. Check that the backend is running and try again.'
-            : error instanceof Error ? error.message : 'Unable to reach the backend.' });
+            ? 'The connection timed out. Please try again shortly.'
+            : error instanceof Error ? error.message : 'Unable to connect. Please try again.' });
         }
       } finally {
         window.clearTimeout(timeout);
@@ -68,7 +68,7 @@ export function Overview() {
         </div>
         <div className="panel-body">
           <dl className="connection-details">
-            <div><dt>Service</dt><dd>DRIGO API</dd></div>
+            <div><dt>Service</dt><dd>DRIGO</dd></div>
             <div>
               <dt>Status</dt>
               <dd role="status" aria-live="polite">

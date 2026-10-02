@@ -47,7 +47,6 @@
 .rental-action-form input, .rental-action-form select { width: 100%; min-width: 0; padding: 9px; border: 1px solid #aabac7; border-radius: 4px; background: white; font: inherit; }
 .rental-action-confirm { padding: 12px; background: #fff9ee; border-left: 3px solid #b98335; }
 .rentals-page .clickable-row { cursor: pointer; }
-.rentals-page .clickable-row:hover td, .rentals-page .clickable-row:focus-within td { background: #edf4f6; }
 .rental-identity-grid, .rental-overview-grid, .rental-photo-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .rental-identity { min-width: 0; padding: 20px; background: #fff; border: 1px solid #dce3e9; border-radius: 8px; }
 .rental-eyebrow { color: #53697a; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }

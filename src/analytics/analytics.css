@@ -21,6 +21,9 @@
 .analytics-fields > div { min-width:0; padding-bottom:10px; border-bottom:1px solid #e3eaf1; }
 .analytics-fields dt { color:#435d75; font-size:13px; font-weight:600; margin-bottom:6px; }
 .analytics-fields dd { margin:0; overflow-wrap:anywhere; line-height:1.5; }
+.analytics-fields .analytics-fields { margin-top:12px; padding-left:16px; border-left:2px solid #e3eaf1; }
+.analytics-fields dd { font-variant-numeric:tabular-nums; }
+@media(max-width:600px) { .analytics-chart { height:220px; } }
 .analytics-wide { grid-column:1/-1; }
 .analytics-module td { font-variant-numeric:tabular-nums; white-space:nowrap; }
 .analytics-source-table { margin-top:14px; }

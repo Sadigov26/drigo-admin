@@ -32,7 +32,7 @@ it('templates and suggestions only update draft; Enter sends and refreshes', asy
   await waitFor(() => expect(changed).toHaveBeenCalled());
   expect(api.actOnTicket).toHaveBeenCalledTimes(1);
   expect(input.value).toBe('');
-  expect(api.messages).toHaveBeenCalledTimes(2);
+  await waitFor(() => expect(api.messages).toHaveBeenCalledTimes(2));
 });
 it('prevents double submit and retains draft after uncertain failure', async () => {
   let reject!: (error: Error) => void;

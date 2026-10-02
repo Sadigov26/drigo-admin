@@ -2,7 +2,7 @@
 
 Internship frontend built with React, TypeScript and Vite, connected to the separate DRIGO mock backend. Business data and state transitions come from that API.
 
-## Implemented scope through Day 20
+## Implemented scope through Day 21 (local work)
 
 - Two-step authentication, cookie sessions, route guards and logout.
 - Permissions-based navigation, shared tables, dialogs, icons and request states.
@@ -28,6 +28,10 @@ Day 18 adds Promotions, Discounts, Promo codes and Stories CRUD, availability co
 Day 19 adds analytics charts, a monthly report table/chart/totals and drill-down, all-time statistics, monthly financials, and Salik/ENOC summaries with transaction lists. [Day 19 notes](docs/DAY_19.md) document backend timezone and metric limitations.
 
 Day 20 adds Fleet plan/moves/utilization, Geo zone CRUD with a polygon map, parking/gas lists, and Notifications broadcast with audience preview/confirmation, campaigns, schedules and history/feed. [Day 20 notes](docs/DAY_20.md) explain mock dispatch limitations and the Settings-permission fallback.
+
+Day 21 adds Operations (cleanings/cancel/stats, reports, inspections, scraper, monitoring, inquiries, employees, devices and surveys), editable fees, IP/country block lists, SMS country configuration and administrator permission review. [Day 21 notes](docs/DAY_21.md) document actual endpoints, security limitations and verification. This work is submitted through the Day 21 feature-branch PR; merge follows review.
+
+Final Day 21 review also adds failed-payment retry in Customer/Rental payments, problem-report status updates, parking cards with confirmed sync, and previous car journeys with route maps. See [the review notes](docs/DAY_21_REVIEW.md) for verified contracts and remaining limitations.
 
 ## Local setup
 
@@ -65,6 +69,8 @@ node scripts/verify-day16.mjs ../drigo.dev.node
 node scripts/verify-day17.mjs ../drigo.dev.node
 node scripts/verify-day18.mjs ../drigo.dev.node
 node scripts/verify-day19.mjs ../drigo.dev.node
+node scripts/verify-day20.mjs ../drigo.dev.node
+node scripts/verify-day21.mjs ../drigo.dev.node
 ```
 
 Each starts a separate in-memory backend on a free loopback port with persistence and simulation disabled. They check rental actions, customer lifecycle and debt payment without changing the running backend database. Fixed login values authenticate against the provided mock account. Keep these checks in version control; never add production credentials.
@@ -85,6 +91,8 @@ See [scripts/README.md](scripts/README.md) for the assertions covered by each sc
 - `src/tariffs/`: tariff forms, pricing lists, insurance and subscriptions.
 - `src/promotions/`: campaigns, discounts, promo codes, story media, analytics and referral settings.
 - `src/analytics/`: read-only charts, monthly reports, Salik and ENOC.
+- `src/fleet/`: fleet and geo views, notifications and reusable record displays.
+- `src/operations/`: operations, fees/security configuration and administrator permissions.
 - `src/App.tsx`, `src/pages/`, `src/styles.css`: routes, overview and shared layout.
 - `scripts/`: isolated backend contract checks.
 - `docs/DAY_*.md`: daily scope, API findings and verification.
@@ -95,7 +103,8 @@ See [scripts/README.md](scripts/README.md) for the assertions covered by each sc
 - Blocking sends `{ blocked: true, reason }`. The backend stores `blockReason`, but the customer detail mapper does not return it. Unblocking clears it. Displaying a persisted reason requires a backend API change.
 - Bonus history is empty in this mock; some devices and login history are generated on each request. Document images can be generic placeholders.
 - Pay all marks debt records paid; it does not retry rental payments or settle PaymentPending rentals. The preflight snapshot check cannot make separate GET/POST requests atomic.
-- Customer payment retry and other advanced operations are separate work. Backend support does not imply a finished UI.
+- Payment retry updates the payment status/failure reason only in this mock; it does not settle debts or complete a PaymentPending rental. The UI confirms the attempt, reads back its result and blocks immediate resubmission after an uncertain result.
+- Security lists and SMS configuration are stored by the mock, not enforced as a production firewall or SMS policy. Monitoring metrics are simulated. Frontend permission checks cannot replace backend authorization.
 
 ## Workflow and next work
 
@@ -103,4 +112,4 @@ Start from updated main on a feature branch. Make meaningful commits, push the f
 
 Understand each committed change. Work on at least 21 different days; commit dates must reflect actual work. The original car-browser project remains separate.
 
-Current work: Day 19 Analytics & Monthly Report, based on Day 18 so earlier modules remain included. Day 18 review/merge precedes Day 19. Next planned module: Day 20 Fleet & Geo + Notifications. Publishing and PR review remain separate completion steps.
+Current work: Day 21 Operations, Settings & Security, payment retry and final presentation polish on `feature/day-21`. Publication through a feature-branch PR is authorized; review and merge remain separate steps. Daily notes DAY_01 through DAY_21 are present. See [final review notes](docs/DAY_21_REVIEW.md) for tested behavior, process checks and remaining backend limitations.

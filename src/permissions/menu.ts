@@ -18,4 +18,7 @@ export const menuItems = [
   // as the conservative UI policy until the backend defines dedicated grants.
   { label: 'Notifications', path: '/notifications', permission: 'settings.view' },
   { label: 'Settings', path: '/settings', permission: 'settings.view' },
+  // The supplied catalogue has no operations module; use Fleet grants for these screens.
+  { label: 'Operations', path: '/operations', permission: 'fleet.view' },
+  { label: 'Admin management', path: '/admins', permission: 'admins.view' },
 ];

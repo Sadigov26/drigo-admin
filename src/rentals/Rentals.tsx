@@ -50,6 +50,6 @@ export default function Rentals() {
         <button onClick={() => setQuery(initial)}>Clear filters</button>
       </>} />
     {(query.minHours || query.maxHours) && <p className="rental-note">Duration is start to end; ongoing rentals use the time of refresh.</p>}
-    <Modal isOpen={selected != null} title={`Rental #${selected ?? ''}`} onClose={() => { if (!actionBusy) setSelected(null); }}>{selected != null && <RentalDetails key={selected} rentalId={selected} canEdit={can('rentals.edit')} onBusy={setActionBusy} onChanged={() => setAttempt(value => value + 1)} />}</Modal>
+    <Modal isOpen={selected != null} title={`Rental #${selected ?? ''}`} onClose={() => { if (!actionBusy) setSelected(null); }}>{selected != null && <RentalDetails key={selected} rentalId={selected} canEdit={can('rentals.edit')} canRetry={can('debts.edit')} onBusy={setActionBusy} onChanged={() => setAttempt(value => value + 1)} />}</Modal>
   </section>;
 }

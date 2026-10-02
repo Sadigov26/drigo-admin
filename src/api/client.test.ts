@@ -4,6 +4,16 @@ import { apiRequest, SESSION_EXPIRED_EVENT } from './client';
 afterEach(() => vi.unstubAllGlobals());
 
 describe('API errors', () => {
+  it('emits session expiry across every module, including the admin listing', async () => {
+    const expired = vi.fn();
+    window.addEventListener(SESSION_EXPIRED_EVENT, expired);
+    vi.stubGlobal('fetch', vi.fn().mockImplementation(() => Promise.resolve(new Response('{"message":"Expired"}', { status: 401 }))));
+    const paths = ['dashboard/kpis', 'cars', 'brands', 'rentals', 'users', 'debts', 'manual-fines', 'reservations', 'deliveryDrivers', 'supports', 'tariff-packages', 'promotions', 'analytics/revenue-daily', 'fleetplan', 'notifications/history', 'cleanings', 'trip-fee', 'security/blocked-ips', 'auth?page=1', 'permissions/admins/test'];
+    try {
+      for (const path of paths) await expect(apiRequest(`/api/admin/${path}`)).rejects.toMatchObject({ status: 401 });
+      expect(expired).toHaveBeenCalledTimes(paths.length);
+    } finally { window.removeEventListener(SESSION_EXPIRED_EVENT, expired); }
+  });
   it('preserves 403 and the server message without expiring the session', async () => {
     const expired = vi.fn();
     window.addEventListener(SESSION_EXPIRED_EVENT, expired);
