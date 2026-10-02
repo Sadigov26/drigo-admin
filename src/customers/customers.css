@@ -93,3 +93,4 @@
   .customer-identity .customer-image img { height: 90px; }
   .customer-profile h3 { font-size: 20px; }
 }
+.customer-row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }

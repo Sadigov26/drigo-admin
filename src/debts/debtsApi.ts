@@ -21,12 +21,12 @@ async function snapshot(path: string, signal?: AbortSignal): Promise<Record<stri
     expected = Number(payload.total);
     result.push(...payload.data.map(object));
     if (result.length >= expected) {
-      if (result.length !== expected || new Set(result.map(row => row.id)).size !== result.length) throw new Error('Incomplete debt snapshot. Refresh the list.');
+      if (result.length !== expected || new Set(result.map(row => row.id)).size !== result.length) throw new Error('Incomplete debt list. Refresh and try again.');
       return result;
     }
-    if (!payload.data.length) throw new Error('Incomplete debt snapshot. Refresh the list.');
+    if (!payload.data.length) throw new Error('Incomplete debt list. Refresh and try again.');
   }
-  throw new Error('The list exceeds the supported snapshot size (10,000). Server-side search is required.');
+  throw new Error('There are too many debts to search at once. Use the filters to narrow the list.');
 }
 export async function getDebtLists(signal?: AbortSignal) {
   const [rawDebtors, rawDebts] = await Promise.all([snapshot('/api/admin/users/with-debt', signal), snapshot('/api/admin/debts', signal)]);

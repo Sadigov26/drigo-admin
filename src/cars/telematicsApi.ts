@@ -29,6 +29,19 @@ export function parsePoints(value: unknown): Point[] {
 }
 export const getTracking = async (signal: AbortSignal) => parseTracking(await apiRequest(root + '/tracking', { signal, cache: 'no-store' }));
 export const getPoints = async (carId: number, signal: AbortSignal) => parsePoints(await apiRequest(`${root}/${carId}/gps-points`, { signal, cache: 'no-store' }));
+export type HistoryRoute = { routeId: number; date: string; distanceKm: number; durationMin: number; startAddress: string; endAddress: string };
+export async function getHistoryRoutes(carId: number, signal: AbortSignal): Promise<HistoryRoute[]> {
+  const result = object(await apiRequest(`${root}/${id(carId)}/history-routes`, { signal, cache: 'no-store' }));
+  if (result.carId !== carId) throw new Error('Route history does not match this vehicle.');
+  const routes = list(result.routes).map(item => { const row = object(item); return { routeId: id(row.routeId), date: time(row.date), distanceKm: numeric(row.distanceKm, 0), durationMin: numeric(row.durationMin, 0), startAddress: text(row.startAddress), endAddress: text(row.endAddress) }; });
+  if (new Set(routes.map(row => row.routeId)).size !== routes.length) throw new Error('Duplicate route references.');
+  return routes;
+}
+export async function getHistoryPoints(routeId: number, signal: AbortSignal): Promise<Point[]> {
+  const result = object(await apiRequest(`${root}/routes/${id(routeId)}/points`, { signal, cache: 'no-store' }));
+  if (result.routeId !== routeId) throw new Error('Route points do not match this journey.');
+  return parsePoints(result.points);
+}
 export async function getStatus(carId: number, signal: AbortSignal): Promise<VehicleStatus> {
   const row = object(await apiRequest(`${root}/${carId}/status`, { signal, cache: 'no-store' }));
   if (id(row.carId) !== carId) throw new Error('Vehicle status ID mismatch.');

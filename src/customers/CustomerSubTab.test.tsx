@@ -20,6 +20,30 @@ const id = '11111111-1111-4111-8111-111111111111';
 const debt = { userId: id, currency: 'AED', totalDebt: 25, debts: [{ id: 1, amount: 25, currency: 'AED', isPaid: false, description: 'Service fee' }] };
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status });
 const props = { id, canPay: true, onBusy: vi.fn(), onChanged: vi.fn() };
+it('retries a failed customer payment once after confirmation and refreshes its stored status', async () => {
+  let status = 'Failed';
+  const fetcher = vi.fn().mockImplementation((_url: string, options: RequestInit) => {
+    if (options.method === 'POST') { status = 'Succeeded'; return Promise.resolve(json({ success: true, status })); }
+    return Promise.resolve(json({ data: [{ id: 1, amount: 25, currency: 'AED', status }], total: 1, page: 1, pageSize: 10 }));
+  });
+  vi.stubGlobal('fetch', fetcher);
+  render(<CustomerSubTab {...props} tab="Payments" />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Retry payment' }));
+  expect(fetcher.mock.calls.some(call => call[1].method === 'POST')).toBe(false);
+  const confirm = screen.getByRole('button', { name: 'Confirm retry' });
+  fireEvent.click(confirm); fireEvent.click(confirm);
+  await screen.findByText('Succeeded');
+  expect(fetcher.mock.calls.filter(call => call[1].method === 'POST')).toHaveLength(1);
+  expect(props.onChanged).toHaveBeenCalledOnce();
+  expect(props.onBusy).toHaveBeenCalledWith(true);
+  expect(props.onBusy).toHaveBeenCalledWith(false);
+});
+it('hides customer payment retry without payment permission', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ data: [{ id: 1, amount: 25, status: 'Failed' }], total: 1, page: 1, pageSize: 10 })));
+  render(<CustomerSubTab {...props} canPay={false} tab="Payments" />);
+  await screen.findByText('Failed');
+  expect(screen.queryByRole('button', { name: 'Retry payment' })).toBeNull();
+});
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.clearAllMocks(); });
 
 it.each(customerTabs)('loads %s through the cookie-based wrapper', async tab => {

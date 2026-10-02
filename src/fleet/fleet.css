@@ -1,7 +1,8 @@
 .fleet-module { min-width:0; }
 .fleet-banner { background:#edf4fa; border:1px solid #d4e2ef; padding:22px; border-radius:8px; margin-bottom:20px; }
 .fleet-banner p { color:#4a627a; margin:8px 0 0; }
-.fleet-tabs { display:flex; flex-wrap:wrap; gap:8px; padding:8px; margin-bottom:22px; background:#e8eef4; border-radius:8px; }
+.fleet-tabs { display:flex; flex-wrap:wrap; gap:8px; padding:8px; margin-bottom:22px; background:#e8eef4; border-radius:8px; border-bottom:2px solid #d9e3ed; }
+.fleet-panel > h2 { margin:0 0 16px; }
 .fleet-tabs button[aria-pressed="true"] { background:#315d88; color:white; border-color:#315d88; }
 .fleet-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
 .fleet-heading h2 { margin:0; font-size:19px; }
@@ -21,6 +22,12 @@
 .fleet-wide { grid-column:1/-1; }
 .fleet-nested { display:grid; gap:8px; }
 .fleet-nested .fleet-fields { margin:0; }
+.fleet-record-card { min-width:0; background:#fff; border:1px solid #ceddeb; border-radius:10px; padding:16px; box-shadow:0 2px 5px #233c5410; }
+.fleet-record-card > header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:0 0 12px; margin-bottom:12px; border-bottom:1px solid #dce7f0; color:#244b6e; }
+.fleet-record-card:nth-child(even) { border-left:4px solid #78a995; }
+.fleet-record-card:nth-child(odd) { border-left:4px solid #739ac2; }
+.fleet-record-id { background:#eaf1f9; border-radius:5px; padding:3px 8px; font-size:12px; font-variant-numeric:tabular-nums; }
+.fleet-nested { gap:18px; }
 .fleet-form { display:grid; gap:16px; }
 .fleet-form fieldset { display:grid; gap:16px; border:0; padding:0; margin:0; min-width:0; }
 .fleet-form label { display:grid; gap:8px; font-weight:500; color:#344e68; }
@@ -37,3 +44,11 @@
 .fleet-map { height:360px; border:1px solid #d4e2ef; border-radius:8px; }
 .modal:has(.fleet-detail),.modal:has(.fleet-form) { width:min(940px,calc(100vw - 32px)); }
 @media(max-width:650px) { .fleet-fields,.fleet-form-grid { grid-template-columns:1fr; } .fleet-panel { padding:14px; } .fleet-heading { align-items:flex-start; } .fleet-map { height:280px; } }
+.fleet-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.fleet-chips li { background: #eaf1f9; border: 1px solid #ceddeb; border-radius: 999px; padding: 4px 12px; font-size: 14px; color: #244b6e; }
+.fleet-country { font-variant-numeric: tabular-nums; }
+.fleet-compact { margin-top: 10px; }
+.fleet-compact table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.fleet-compact th, .fleet-compact td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #dce7f0; }
+.fleet-compact th { color: #244b6e; background: #f3f7fb; font-weight: 600; white-space: nowrap; }
+.fleet-compact tbody tr:last-child td { border-bottom: 0; }

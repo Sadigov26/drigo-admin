@@ -27,7 +27,7 @@ export async function list(resource: Resource, signal?: AbortSignal): Promise<Ro
     }
     if (!value.data.length) break;
   }
-  throw new Error('The full list could not be loaded. Search requires a complete snapshot.');
+  throw new Error('The full list could not be loaded, so search is unavailable. Refresh and try again.');
 }
 export async function detail(resource: Resource, id: number, signal?: AbortSignal) {
   if (resource !== 'deliveryZones') return record(await apiRequest(`${base}${resource}/${id}`, { signal }));
@@ -98,7 +98,7 @@ export async function save(resource: Exclude<Resource, 'reservations'>, input: R
   // Create ignores status/isActive; it always creates an Offline, active driver.
   const payload = !snapshot && resource === 'deliveryDrivers' ? { fullName: body.fullName, phoneNumber: body.phoneNumber, email: body.email, zoneId: body.zoneId } : body;
   // Zero coordinates are valid, but the mock POST substitutes random coordinates for them.
-  if (!snapshot && resource === 'deliveryZones' && (body.centerLat === 0 || body.centerLng === 0)) throw new Error('This mock cannot create a zone with a zero coordinate.');
+  if (!snapshot && resource === 'deliveryZones' && (body.centerLat === 0 || body.centerLng === 0)) throw new Error('Coordinates cannot be zero.');
   return record(await apiRequest(base + resource + (snapshot ? `/${snapshot.id}` : ''), { method: snapshot ? 'PUT' : 'POST', body: JSON.stringify(payload) }));
 }
 export async function remove(resource: Exclude<Resource, 'reservations'>, snapshot: Row) {

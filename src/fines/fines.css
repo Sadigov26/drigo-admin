@@ -28,6 +28,7 @@
 .incident-fine-date { color:#52667b; font-size:12px; }
 .incident-fine>.incident-fields,.incident-fine>section { margin:18px; }
 @media(max-width:800px) { .incident-sync-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .incident-sync-grid { grid-template-columns:minmax(0,1fr); } }
 .incidents select,.incident-form input,.incident-form select,.incident-form textarea { min-height:38px; border:1px solid #b5c3d1; border-radius:5px; padding:8px 10px; font:inherit; background:white; width:100%; }
 .incident-detail { min-width:0; }
 .modal:has(.incident-detail) { width:min(1180px,calc(100vw - 32px)); }

@@ -50,7 +50,6 @@ button.car-link { padding: 0; border: 0; background: none; color: #365e50; text-
 .car-feature-list { display: flex; gap: 8px; flex-wrap: wrap; }
 .car-feature-list span { padding: 5px 9px; background: #edf4ee; color: #365e50; border-radius: 4px; font-size: 13px; }
 .cars-page .clickable-row { cursor: pointer; }
-.cars-page .clickable-row:hover td, .cars-page .clickable-row:focus-within td { background: #edf4f8; }
 .car-row-actions { justify-content: flex-end; flex-wrap: nowrap; }
 .cars-page th:last-child { text-align: right; }
 button.car-edit-action { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
@@ -81,3 +80,4 @@ button.car-delete-action { color: #b91c1c; background: #fff1f2; border-color: #f
 .car-detail-panel .vehicle-command-grid button { text-align: left; min-height: 42px; }
 @media (max-width: 640px) { .car-info-grid { grid-template-columns: minmax(0, 1fr); } .car-detail-tabs button { flex: 1 1 40%; } .car-profile { gap: 14px; padding: 16px; } .car-info-card { padding: 16px; } }
 @media (max-width: 640px) { .cars-heading, .car-filters { align-items: stretch; flex-direction: column; } .car-fields, .car-details { grid-template-columns: 1fr; } .car-actions { justify-content: flex-start; } }
+@media (max-width: 640px) { .car-filters label { min-width: 0; width: 100%; } }

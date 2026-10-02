@@ -1,11 +1,13 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 import type { ReactNode } from 'react';
+import { RecordMedia, RecordLink } from '../components/RecordMedia';
 import { getPayments, getRental } from './rentalsApi';
 import { useVehicleResource } from '../cars/useVehicleResource';
 import { EmptyState, ErrorState, LoadingState } from '../components/States';
 import { StatusBadge } from '../components/StatusBadge';
 import { Icon, type IconName } from '../components/Icon';
 import { RentalActions } from './RentalActions';
+import { RetryPayment } from '../customers/RetryPayment';
 const RentalRoute = lazy(() => import('./RentalRoute'));
 export const text = (value: unknown) => typeof value === 'string' && value.trim() ? value : '—';
 export function date(value: unknown) {
@@ -18,6 +20,7 @@ const label = (key: string) => key.replace(/([A-Z])/g, ' $1').replace(/^./, lett
 // Decorative color-name indicators, not a manufacturer paint-code lookup.
 const colorIndicators: Record<string, string> = { silver: '#c0c0c0', white: '#ffffff', black: '#222222', red: '#b91c1c', blue: '#315d88', grey: '#808080', gray: '#808080', green: '#365e50', yellow: '#e8bf48' };
 function valueView(value: unknown, key = '', currency: unknown = 'AED'): ReactNode {
+  if (typeof value === 'string' && /^https?:\/\//i.test(value)) return /photo|image|thumbnail|media|^url$/i.test(key) ? <RecordMedia value={value} /> : <RecordLink value={value} />;
   if (value == null || value === '') return '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (Array.isArray(value)) return value.length ? <ul className="rental-records">{value.map((item, index) => <li key={index}>{valueView(item, '', currency)}</li>)}</ul> : 'None';
@@ -83,20 +86,21 @@ function Photos({ title, value }: { title: string; value: unknown }) {
   }) : [];
   return <section className="rental-section"><h3>{title}</h3>{urls.length ? <div className="rental-photos">{urls.map((url, index) => <a key={`${url}-${index}`} href={url} target="_blank" rel="noopener noreferrer"><img src={url} alt={`${title} ${index + 1}`} loading="lazy" referrerPolicy="no-referrer" /></a>)}</div> : <EmptyState message="No photos available." />}</section>;
 }
-function Payments({ rentalId }: { rentalId: number }) {
+function Payments({ rentalId, userId, canRetry, busy, onBusy, onRetried }: { rentalId: number; userId: string; canRetry: boolean; busy: boolean; onBusy: (busy: boolean) => void; onRetried: (notice: string) => void }) {
   const load = useCallback((signal: AbortSignal) => getPayments(rentalId, signal), [rentalId]);
   const payments = useVehicleResource(load);
-  return <section><button disabled={payments.loading} onClick={payments.refresh}>Refresh payments</button>
+  return <section><button disabled={payments.loading || busy} onClick={payments.refresh}>Refresh payments</button>
     {payments.loading ? <LoadingState /> : payments.error ? <ErrorState message={payments.error} onRetry={payments.refresh} /> : payments.data?.length ? <div className="payment-records">{payments.data.map((payment, index) => <article className="payment-receipt" key={String(payment.id ?? index)} aria-label={`Payment ${payment.id}`}>
       <header><div><span className="receipt-eyebrow">DRIGO · Payment record</span><h3>#{String(payment.id)} · {text(payment.transactionType)}</h3></div><StatusBadge status={text(payment.status)} /></header>
       <div className="receipt-total"><span>Payment amount</span><strong>{money(payment.amount, payment.currency)}</strong></div>
       <dl className="receipt-lines"><div><dt>Rental</dt><dd>#{rentalId}</dd></div><div><dt>Date · Dubai</dt><dd>{date(payment.createdAt)}</dd></div><div><dt>Service fee</dt><dd>{money(payment.serviceFee, payment.currency)}</dd></div><div><dt>Period</dt><dd>{date(payment.periodStart)} — {date(payment.periodEnd)}</dd></div><div><dt>Final payment</dt><dd>{payment.isFinalPayment == null ? '—' : payment.isFinalPayment ? 'Yes' : 'No'}</dd></div></dl>
       {typeof payment.failureReason === 'string' && payment.failureReason && <p className="error-message">{payment.failureReason}</p>}
+      {canRetry && userId && Number.isSafeInteger(payment.id) && <RetryPayment disabled={busy} onBusy={onBusy} userId={userId} paymentId={Number(payment.id)} status={payment.status} amount={money(payment.amount, payment.currency)} read={async () => (await getPayments(rentalId)).find(item => item.id === payment.id)} onDone={notice => { payments.refresh(); onRetried(notice); }} />}
       <details><summary>Transaction details</summary>{valueView(payment)}</details>
     </article>)}</div> : <EmptyState message="No payments recorded." />}
   </section>;
 }
-export default function RentalDetails({ rentalId, canEdit = false, onChanged, onBusy }: { rentalId: number; canEdit?: boolean; onChanged?: () => void; onBusy?: (busy: boolean) => void }) {
+export default function RentalDetails({ rentalId, canEdit = false, canRetry = false, onChanged, onBusy }: { rentalId: number; canEdit?: boolean; canRetry?: boolean; onChanged?: () => void; onBusy?: (busy: boolean) => void }) {
   const load = useCallback((signal: AbortSignal) => getRental(rentalId, signal), [rentalId]);
   const detail = useVehicleResource(load);
   const [tab, setTab] = useState('summary');
@@ -107,12 +111,12 @@ export default function RentalDetails({ rentalId, canEdit = false, onChanged, on
   return <div className="rental-detail">
     {message && <p role="status">{message}</p>}
     <nav className="rental-tabs" aria-label="Rental detail views">{['summary', 'payments', 'route', 'history', 'photos', 'details'].map(value => <button key={value} disabled={busy} aria-pressed={tab === value} onClick={() => setTab(value)}><Icon name={({ summary: 'info', payments: 'receipt', route: 'map', history: 'history', photos: 'image', details: 'settings' } as Record<string, IconName>)[value]} />{label(value)}</button>)}</nav>
-    {tab === 'payments' ? <Payments rentalId={rentalId} /> : tab === 'route' ? <Suspense fallback={<LoadingState message="Loading map…" />}><RentalRoute rentalId={rentalId} /></Suspense> : <>
+    {tab === 'payments' ? <Payments rentalId={rentalId} userId={typeof record(row?.user).id === 'string' ? String(record(row?.user).id) : ''} canRetry={canRetry} busy={busy} onBusy={value => { setBusy(value); onBusy?.(value); }} onRetried={notice => { setMessage(notice); detail.refresh(); onChanged?.(); }} /> : tab === 'route' ? <Suspense fallback={<LoadingState message="Loading map…" />}><RentalRoute rentalId={rentalId} /></Suspense> : <>
       <button disabled={busy || detail.loading} onClick={detail.refresh}>Refresh details</button>
       {detail.loading ? <LoadingState /> : detail.error ? <ErrorState message={detail.error} onRetry={detail.refresh} /> : row && <>
         {tab === 'summary' && <>
         <div className="rental-summary"><div><span className="summary-label">Rental status</span><StatusBadge status={row.status} /></div><div className="summary-amount"><span className="summary-label">Rental amount</span><strong>{money(row.totalPrice)}</strong></div><div className="summary-date"><span className="summary-label">Started · Dubai</span><span>{date(row.startDate)}</span></div></div>
-        {row.status === 'PaymentPending' && <><Section title="Payment retry state" value={row.paymentRetryState} /><p className="rental-note">Review the failed transaction in Payments and the debts below. Customer payment retry will be available with the Customers module.</p></>}
+        {row.status === 'PaymentPending' && <><Section title="Payment retry state" value={row.paymentRetryState} /><p className="rental-note">Review the failed payments and any outstanding debts. A payment retry does not automatically close this rental or settle its debts. {canRetry ? 'Retry the failed payment from the Payments tab.' : 'A colleague with payment access can retry the failed payment.'}</p>{canRetry && <button className="btn-soft-primary" onClick={() => setTab('payments')}><Icon name="receipt" />Go to payments</button>}</>}
         {row.status === 'Cancelled' && <Section title="Cancellation reason" value={row.cancelReason} />}
         {canEdit && <RentalActions rental={row} onBusy={value => { setBusy(value); onBusy?.(value); }} onChanged={notice => { setMessage(notice); detail.refresh(); onChanged?.(); }} />}
         <div className="rental-identity-grid"><IdentityCard title="Customer" value={row.user} primary="fullName" secondary={['phoneNumber', 'email']} /><IdentityCard title="Car" value={row.car} primary="plateNumber" secondary={['brand', 'model']} /></div>

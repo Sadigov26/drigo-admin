@@ -63,7 +63,7 @@ export function CarForm({ car, busy, onSave, onCancel }: Props) {
     if (values.chassisNumber.trim()) body.chassisNumber = values.chassisNumber.trim();
     if (!car) {
       if (!base.cities.some(city => city.name === values.city)) { setError('Choose a city.'); return; }
-      if (Number(body.engineCapacity) === 0) { setError('This mock defaults zero capacity to 2.0 on creation. Use a positive capacity, then edit it to zero if needed.'); return; }
+      if (Number(body.engineCapacity) === 0) { setError('Enter a positive engine capacity when creating a car.'); return; }
       body.city = values.city;
     }
     // Do not overwrite live fields (such as distance) when only another field changed.
