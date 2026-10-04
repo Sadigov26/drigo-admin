@@ -2,7 +2,7 @@
 
 ## Scope and publication
 
-Implements the requested Section 8.16/8.17 scope on `feature/day-21`, including final review additions documented in [DAY_21_REVIEW.md](DAY_21_REVIEW.md). Implementation initially stayed local; the user subsequently requested feature-branch push and PR. Reconcile with reviewed main before publication. Do not backdate commits or claim the 21-day process requirement solely from the presence of daily notes.
+Implements the requested Section 8.16/8.17 scope, including additions documented in [DAY_21_REVIEW.md](DAY_21_REVIEW.md). Published through PR #21 and merged to main on 2 October 2026. The final handoff audit confirms 21 distinct author dates through that delivery; no commit dates were altered. See [FINAL_HANDOFF.md](FINAL_HANDOFF.md) for current checks and packaging.
 
 ## Operations
 
@@ -55,7 +55,7 @@ These are frontend safeguards, not server authorization. The mock stores block e
 - A full-suite run exposed a timing assumption in the existing Support test: its refresh assertion ran before the effect. It now waits for the second messages request instead of weakening the expected count.
 - README updated; daily notes DAY_01 through DAY_21 are present.
 
-This is a scoped regression check, not an assertion that every possible record, breakpoint or backend failure has been manually exercised. Tariff-distance mutations remain unavailable in the supplied backend. Payment retry is now implemented; see the final review notes. Publishing, screenshots and PR review remain pending.
+This is a scoped regression check, not an assertion that every possible record, breakpoint or backend failure has been manually exercised. Tariff-distance mutations remain unavailable in the supplied backend. Payment retry is implemented and PR #21 is merged; see the final review and handoff notes for updated verification.
 
 ## Review questions
 

@@ -42,3 +42,21 @@ it.each(pages)('%s shows an actionable error when the backend is offline', async
   fireEvent.click(retry);
   await waitFor(() => expect(vi.mocked(apiRequest).mock.calls.length).toBeGreaterThan(before));
 });
+
+// These list screens complement the empty-state tests in Cars, Delivery, Debts,
+// Fines, Promotions, Fleet, Dashboard and Analytics. No live dataset is reset.
+it.each([
+  ['Brands', <Catalog />], ['Rentals', <Rentals />], ['Customers', <Customers />],
+  ['Support', <Support />], ['Tariffs', <Tariffs />],
+  ['Notifications', <Notifications />], ['Admins', <Admins />], ['Settings', <Settings />],
+] as const)('%s displays an empty response without claiming a request failure', async (_name, component) => {
+  vi.mocked(apiRequest).mockImplementation(async path => {
+    const url = new URL(String(path), 'http://localhost');
+    if (url.pathname.endsWith('/tariff-packages')) return [];
+    if (url.pathname.endsWith('/trip-fee')) return {};
+    return { data: [], total: 0, page: 1, pageSize: Number(url.searchParams.get('pageSize') ?? 10) };
+  });
+  render(<MemoryRouter>{component}</MemoryRouter>);
+  expect(await screen.findByText('No results found.')).toBeTruthy();
+  expect(screen.queryByRole('alert')).toBeNull();
+});

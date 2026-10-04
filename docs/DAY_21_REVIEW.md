@@ -19,10 +19,10 @@ Paths are relative to `/api/admin`. Route source and authenticated read-only cur
 
 - Global tariff-distance POST/PUT/DELETE routes are absent. The UI remains read-only and does not invent successful mutations.
 - SMS country configuration is stored by the mock, not enforced as a real delivery policy. Monitoring metrics are simulated. Production enforcement belongs in the backend.
-- Local main is stale at Day 10, but read-only GitHub checks confirm PRs 17–20 are merged; remote main was `eaec0d87dd28c1b5916875cbcbfbc2a6d9ef1935`. Current feature/day-21 includes Day 20. Reconcile with reviewed main before publishing without discarding local work.
-- `core.autocrlf=true` was already configured; no blanket line-ending rewrite was performed. Existing history has 20 distinct author dates and DAY_01–21 notes exist. No dates were altered; notes alone do not satisfy the different-day commit requirement.
+- Historical note: before the Day 21 commit, the checkout had 20 distinct author dates and a stale local main. Day 21 was committed on 2 October 2026 and PR #21 merged that day. The 4 October audit confirmed **21 distinct author dates** and all PRs #1–#21 merged. No dates were altered. See FINAL_HANDOFF.md for current delivery checks.
+- Git's index already stored text as LF; some Windows working copies used CRLF. The final handoff adds a repository-level `.gitattributes` policy for LF text and binary preservation. Renormalization is checked for unintended content changes.
 - The pasted review alleges a previously shared GitHub token. No token was copied for these fixes. If exposed, its owner must revoke it; removing a message does not revoke a credential.
-- The initial ZIP review stayed local. The user subsequently authorized final polish, feature-branch publication and a PR. Merge remains a separate review step.
+- The initial ZIP review stayed local; final implementation was published and merged through PR #21 on 2 October 2026. Subsequent handoff documentation and test additions use a separate PR.
 
 ## Final presentation pass
 
@@ -35,7 +35,7 @@ Paths are relative to `/api/admin`. Route source and authenticated read-only cur
 
 ## Review handoff
 
-Demonstrate end rental, customer verify, fine billing to debt, debt payment, driver assignment and failed-payment retry. Explain refresh-after-write, uncertain request outcomes, 401 and 409 behavior, and the backend limitations above. Add PR screenshots and complete review before merge. Maximum grading cannot be guaranteed by code checks alone; understanding and the handbook's day-by-day workflow are part of evaluation.
+Demonstrate end rental, customer verify, fine billing to debt, debt payment, failed-payment retry, driver assignment and vehicle commands. Explain refresh-after-write, uncertain request outcomes, 401 and 409 behavior, and the backend limitations above. Use screenshots for UI changes and complete review before merge. Maximum grading cannot be guaranteed by code checks alone; understanding and the handbook's day-by-day workflow are part of evaluation.
 
 ## Verification
 
