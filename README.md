@@ -2,7 +2,9 @@
 
 Internship frontend built with React, TypeScript and Vite, connected to the separate DRIGO mock backend. Business data and state transitions come from that API.
 
-## Implemented scope through Day 21 (local work)
+## Implemented modules
+
+The 21-day implementation was merged to `main` through PR #21 on **2 October 2026**. The module inventory below describes the implemented scope; backend limitations remain explicitly documented. Final handoff verification: **326 tests pass**, TypeScript and production build pass, and `npm audit` reports **0 vulnerabilities**. The handoff adds empty-state coverage and portable source packaging; see [the audit](docs/FINAL_HANDOFF.md).
 
 - Two-step authentication, cookie sessions, route guards and logout.
 - Permissions-based navigation, shared tables, dialogs, icons and request states.
@@ -17,7 +19,7 @@ Internship frontend built with React, TypeScript and Vite, connected to the sepa
 - Fines & Accidents: fine/review/scraper lists, sync status, customer/company billing, dismissal, per-car records and accident CRUD. See [Day 14 notes](docs/DAY_14.md) for backend differences and verification.
 - Reservations & Delivery: reservation pipeline, cancel/assign-driver, active delivery map, driver and zone CRUD. See [Day 15 notes](docs/DAY_15.md) for validation and mock limitations.
 
-Other navigation entries do not mean every backend module is implemented. Daily notes record exact scope and limitations; PR review is a separate completion step.
+Daily notes record exact API contracts and backend limitations for every module.
 
 Day 16 adds Support: ticket search/status/pagination, chat replies, customer context, assignment/mute/status controls, saved replies and backend suggestions. See [Day 16 notes](docs/DAY_16.md). Day 15 is included from merged main.
 
@@ -29,7 +31,7 @@ Day 19 adds analytics charts, a monthly report table/chart/totals and drill-down
 
 Day 20 adds Fleet plan/moves/utilization, Geo zone CRUD with a polygon map, parking/gas lists, and Notifications broadcast with audience preview/confirmation, campaigns, schedules and history/feed. [Day 20 notes](docs/DAY_20.md) explain mock dispatch limitations and the Settings-permission fallback.
 
-Day 21 adds Operations (cleanings/cancel/stats, reports, inspections, scraper, monitoring, inquiries, employees, devices and surveys), editable fees, IP/country block lists, SMS country configuration and administrator permission review. [Day 21 notes](docs/DAY_21.md) document actual endpoints, security limitations and verification. This work is submitted through the Day 21 feature-branch PR; merge follows review.
+Day 21 adds Operations (cleanings/cancel/stats, reports, inspections, scraper, monitoring, inquiries, employees, devices and surveys), editable fees, IP/country block lists, SMS country configuration and administrator permission review. [Day 21 notes](docs/DAY_21.md) document actual endpoints, security limitations and verification. Day 21 was merged through PR #21 on 2 October 2026.
 
 Final Day 21 review also adds failed-payment retry in Customer/Rental payments, problem-report status updates, parking cards with confirmed sync, and previous car journeys with route maps. See [the review notes](docs/DAY_21_REVIEW.md) for verified contracts and remaining limitations.
 
@@ -49,7 +51,8 @@ VITE-prefixed values are public browser configuration: never put secrets there. 
 ```bash
 npm run typecheck
 npm run build
-npm test -- --maxWorkers=1 --testTimeout=30000
+npm test
+npm audit
 ```
 
 Tests cover authentication, permissions, API errors, shared components and implemented modules. Browser checks complement mocks for layout, focus and cookies. `npm audit` is a separate dependency advisory check.
@@ -106,10 +109,22 @@ See [scripts/README.md](scripts/README.md) for the assertions covered by each sc
 - Payment retry updates the payment status/failure reason only in this mock; it does not settle debts or complete a PaymentPending rental. The UI confirms the attempt, reads back its result and blocks immediate resubmission after an uncertain result.
 - Security lists and SMS configuration are stored by the mock, not enforced as a production firewall or SMS policy. Monitoring metrics are simulated. Frontend permission checks cannot replace backend authorization.
 
-## Workflow and next work
+## Delivery and workflow
+
+### Clean source archive
+
+Export the committed source instead of zipping the working directory:
+
+```bash
+git archive --format=zip --prefix=drigo-admin/ --output=../drigo-admin-source.zip HEAD
+```
+
+The archive contains tracked source and documentation. Generated `dist/`, `node_modules/`, local `.env` files and Git history are excluded. `.env.example` is included for setup. `.gitattributes` enforces LF for text in the repository while preserving binary assets; Windows checkout line endings do not by themselves imply noisy Git diffs.
 
 Start from updated main on a feature branch. Make meaningful commits, push the feature branch, open a PR with a description and screenshot, then merge after review. Never push directly to main or modify the separate backend to hide an API mismatch.
 
 Understand each committed change. Work on at least 21 different days; commit dates must reflect actual work. The original car-browser project remains separate.
 
-Current work: Day 21 Operations, Settings & Security, payment retry and final presentation polish on `feature/day-21`. Publication through a feature-branch PR is authorized; review and merge remain separate steps. Daily notes DAY_01 through DAY_21 are present. See [final review notes](docs/DAY_21_REVIEW.md) for tested behavior, process checks and remaining backend limitations.
+Delivery audit on 4 October 2026: PRs #1–#21 are merged, no PR is open, and the remote contains only `main`. Git history contains 21 distinct author dates (12 September–2 October 2026). All daily notes DAY_01–DAY_21 are present. See [final review notes](docs/DAY_21_REVIEW.md) for contracts and backend limitations.
+
+A stopped backend should display a recoverable connection error. Only a protected request returning HTTP 401 expires the session and redirects to login. Empty-state checks use controlled test responses; `seed:reset` repopulates the mock and is not an empty-data test. Do not reset an existing dataset for UI verification.

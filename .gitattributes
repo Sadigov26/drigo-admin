@@ -1,0 +1,19 @@
+# Repository text is LF on every platform; binary assets remain untouched.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+
+# Source archives must not include generated output or local configuration.
+dist/ export-ignore
+node_modules/ export-ignore
+.env export-ignore
+.env.local export-ignore
+.env.*.local export-ignore
